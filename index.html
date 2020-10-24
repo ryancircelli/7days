@@ -1,0 +1,897 @@
+<?php
+include("auth.html");
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>7days</title>
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      // Creating a cookie after the document is ready
+      Date.prototype.addDays = function(days) {
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+      }
+      var date0 = new Date;
+      var date1;
+      if(date0.getDay() === 0){
+        date1 = date0.addDays(1);
+      } else if(date0.getDay() === 1){
+        date1 = date0;
+      } else if(date0.getDay() === 2){
+        date1 = date0.addDays(-1);
+      } else if(date0.getDay() === 3){
+        date1 = date0.addDays(-2);
+      } else if(date0.getDay() === 4){
+        date1 = date0.addDays(-3);
+      } else if(date0.getDay() === 5){
+        date1 = date0.addDays(-4);
+      } else if(date0.getDay() === 6){
+        date1 = date0.addDays(-5);
+      }
+      //sets date to monday of that week
+
+     function ordinal_suffix_of(i) {
+        var j = i % 10,
+            k = i % 100;
+        if (j == 1 && k != 11) {
+            return i + "st";
+        }
+        if (j == 2 && k != 12) {
+            return i + "nd";
+        }
+        if (j == 3 && k != 13) {
+            return i + "rd";
+        }
+        return i + "th";
+      }
+
+      var date = date1.getMonth()+1 + "/" + date1.getDate() + "/" + date1.getFullYear();
+      const urlParams = new URLSearchParams(window.location.search);
+
+      function textDateUpdate() {
+        var dateselected = date1;
+        if(urlParams.get("sel") !== null){
+          dateselected.setMonth(urlParams.get("sel").split('/')[0]-1);
+          dateselected.setDate(urlParams.get("sel").split('/')[1]);
+          dateselected.setFullYear(urlParams.get("sel").split('/')[2]);
+        }
+        var date2 = dateselected.addDays(1);
+        var date3 = date2.addDays(1);
+        var date4 = date3.addDays(1);
+        var date5 = date4.addDays(1);
+        var tablename = "Schedule (" + (dateselected.getMonth()+1) + "/" + dateselected.getDate() + "-" + (date5.getMonth()+1) + "/" + date5.getDate() +")";
+        document.getElementById("tablename").innerHTML = tablename;
+        document.getElementById("monday").innerHTML = "Mon " + ordinal_suffix_of(dateselected.getDate());
+        document.getElementById("tuesday").innerHTML = "Tue " + ordinal_suffix_of(date2.getDate());
+        document.getElementById("wednesday").innerHTML = "Wed " + ordinal_suffix_of(date3.getDate());
+        document.getElementById("thursday").innerHTML = "Thu " + ordinal_suffix_of(date4.getDate());
+        document.getElementById("friday").innerHTML = "Fri " + ordinal_suffix_of(date5.getDate());
+      }
+
+      window.onload = (e) => {
+        textDateUpdate();
+        createCookie("copy", false, 1);
+      }
+
+      function selectdate(i) {
+        var lastselectedweek = date1.getMonth()+1 + "/" + date1.getDate() + "/" + date1.getFullYear();
+        var dateselected = date1.addDays(i);
+        if(urlParams.get("sel") !== null){
+          dateselected.setMonth(urlParams.get("sel").split('/')[0]-1);
+          dateselected.setDate(urlParams.get("sel").split('/')[1]);
+          dateselected.setFullYear(urlParams.get("sel").split('/')[2]);
+          dateselected = dateselected.addDays(i);
+        }
+        var dateselectedformated = dateselected.getMonth()+1 + "/" + dateselected.getDate() + "/" + dateselected.getFullYear();
+        createCookie("last", lastselectedweek, 1);
+        if (dateselectedformated === date) {
+          return '/';
+        } else {
+          return '/?sel=' + dateselectedformated;
+        }
+      }
+
+      function copy() {
+        //window.confirm("Copy Classes?")
+        if(true){
+          createCookie("copy", true, 1);
+        }
+      }
+
+      if (getCookie("getTime")==="") {
+        createCookie("getTime", date, "1");
+        location.reload();
+      }
+
+      if (getCookie("getTime")!==date) {
+        createCookie("getTime", date, "1");
+        location.reload();
+      }
+
+      // Function to create the cookie
+      function createCookie(name, value, days) {
+        var expires;
+        if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          expires = "; expires=" + date.toGMTString();
+        }
+        else {
+          expires = "";
+        }
+        document.cookie = escape(name) + "=" + escape(value) + expires + "; path=/";
+      }
+      function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+    </script>
+  </head>
+  <div class="main" id="page">
+    <!-- Modal to add link -->
+    <div id="id01" class="w3-modal">
+      <div class="w3-modal-content w3-animate-top w3-card-4">
+        <header class="w3-container modal-color">
+          <span onclick="document.getElementById('id01').style.display='none'" style="background-color: #000000aa;" class="w3-button w3-display-topright">&times;</span>
+          <h2>Input Link</h2>
+        </header>
+        <div class="w3-container">
+          <p></p>
+          <label for="flink">Link:</label>
+          <input style="width:75%; display: inline;" type="text" id="flink" name="flink">
+          <input type="submit" style="background-color: #000000aa; color:white; display: inline; margin-left: 20px;" class="w3-button" value="Submit" onclick="document.getElementById('id01').style.display='none'; AddLinkData(document.getElementById('flink').value);">
+          <p></p>
+        </div>
+        <footer class="w3-container modal-color">
+          <p></p>
+        </footer>
+      </div>
+    </div>
+    <div class= "menu">
+        <a href="about.html">
+            <img src="planner.png" width="100" height="100">
+        </a>
+        <a href="index.html" class="menufont">This Week</a>
+        <a href="weekselector.html" class="menufont" style="display:none !important;">Select Week [Not Implemented Yet]</a>
+        <a href="todo.html" class="menufont">To-Do</a>
+        <div class="form" style="bottom: 0px; position: absolute;">
+            <p>Welcome <?php echo $_SESSION['username']; ?>!</p>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="logout.html">Logout</a>
+        </div>
+    </div>
+    <div class="body">
+      <div class="invest">
+        <div class="investbox">
+          <h1 id="tablename" style="color: #595959; font: bold 36pt Tahoma,'Segoe UI',Calibri,Thonburi,Arial,Verdana,Sans-Serif,'Mongolian Baiti','Microsoft Yi Baiti','Javanese Text';  background-color:white; margin: 0px; line-height: 80px;" class="Table">Schedule</h1>
+          <div id="customcolor" style="position: absolute; right: 60px; top: 90px; z-index: 5;" class="dropdowncolor">
+            <button class="w3-button" style="background-color: #595959; color: white;" onclick="colorSelect(document.getElementById('colorSelected').value);">Custom</button>
+            <div class="dropdown-content-color">
+              <input class="w3-button" style="background-color: #595959; color: white; height: 20px; width: 48.234px; padding: 8px 16px 8px 16px;" type="color" id="colorSelected">
+            </div>
+          </div>
+          <button class="w3-button" style="background-color: #595959; color: white; position: absolute; right: 140px; top: 90px;" onclick="colorGreen();">Green</button>
+          <button class="w3-button" style="background-color: #595959; color: white; position: absolute; right: 211px; top: 90px;" onclick="colorBlue();">Blue</button>
+          <button class="w3-button" style="background-color: #595959; color: white; position: absolute; right: 271px; top: 90px;" onclick="colorGray();">Gray</button>
+          <button class="w3-button glyphicon glyphicon-arrow-right" style="background-color: #595959; color: white; position: absolute; height: 20px; width: 14px; right: 333px; top: 90px;" onclick="copy(); window.location.href=selectdate(7);"></button>
+          <button class="w3-button glyphicon glyphicon-arrow-left" style="background-color: #595959; color: white; position: absolute; height: 20px; width: 14px; right: 379px; top: 90px;" onclick="copy(); window.location.href=selectdate(-7);"></button>
+          <div id="table" class="table-editable">
+            <table id="tableactual" class="table table-bordered">
+              <thead style="">
+                <tr>
+                  <th class="tableheader" style="z-index: 2; width: 11%;  max-width: 11%; border-right: 0px !important;">
+                    <p class="table-add-text">Class</p>
+                    <p style="float: right; margin-right: 5px;" class="table-add glyphicon glyphicon-plus"></p>
+                  </th>
+                  <th class="tableheader" style="z-index: 2; width: 5%; max-width: 5%;">Time</th>
+                  <th class="tableheader" style="z-index: 2; width: 14%; max-width: 14%;" id="monday">Monday</th>
+                  <th class="tableheader" style="z-index: 2; width: 14%; max-width: 14%;" id="tuesday">Tuesday</th>
+                  <th class="tableheader" style="z-index: 2; width: 14%; max-width: 14%;" id="wednesday">Wednesday</th>
+                  <th class="tableheader" style="z-index: 2; width: 14%; max-width: 14%;" id="thursday">Thursday</th>
+                  <th class="tableheader" style="z-index: 2; width: 14%; max-width: 14%;" id="friday">Friday</th>
+                  <th class="tableheader" style="z-index: 2; width: 14%; max-width: 14%; border-right: 0px !important;">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <?php
+                $week = $_COOKIE["getTime"];
+                if ($_GET["sel"] !== null){
+                  $week = $_GET["sel"];
+                }
+                $username = $_SESSION['username'];
+
+                $con = mysqli_connect("localhost","root","mysql","$username");
+                if (mysqli_connect_errno())
+                {
+                  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+                }
+                if (!$result = $con->query("DESCRIBE `$week`") ) {
+                  $copy = $_COOKIE["copy"];
+                  $last = $_COOKIE["last"];
+                  if($copy==="true"){
+                    $con->query("CREATE TABLE `$week` LIKE `$last`");
+                    $con->query("INSERT INTO `$week` SELECT * FROM `$last`");
+                    $con->query("ALTER TABLE `$week` DROP COLUMN monday, DROP COLUMN tuesday, DROP COLUMN wednesday, DROP COLUMN thursday, DROP COLUMN friday, DROP COLUMN notes, DROP COLUMN s1, DROP COLUMN s2, DROP COLUMN s3, DROP COLUMN s4, DROP COLUMN s5, DROP COLUMN s6, DROP COLUMN s7, DROP COLUMN s8, DROP COLUMN l3, DROP COLUMN l4, DROP COLUMN l5, DROP COLUMN l6, DROP COLUMN l7, DROP COLUMN l8;");
+                    $con->query("ALTER TABLE `$week` ADD (monday TEXT, tuesday TEXT, wednesday TEXT, thursday TEXT, friday TEXT, notes TEXT, s1 TEXT, s2 TEXT, s3 TEXT, s4 TEXT, s5 TEXT, s6 TEXT, s7 TEXT, s8 TEXT, l3 TEXT, l4 TEXT, l5 TEXT, l6 TEXT, l7 TEXT, l8 TEXT)");
+                  } else {
+                    $con->query("CREATE TABLE `$username`.`$week` (
+                      id INT NOT NULL AUTO_INCREMENT,
+                      class TEXT,
+                      time TEXT,
+                      monday TEXT,
+                      tuesday TEXT,
+                      wednesday TEXT,
+                      thursday TEXT,
+                      friday TEXT,
+                      notes TEXT,
+                      s1 TEXT,
+                      s2 TEXT,
+                      s3 TEXT,
+                      s4 TEXT,
+                      s5 TEXT,
+                      s6 TEXT,
+                      s7 TEXT,
+                      s8 TEXT,
+                      l1 TEXT,
+                      l2 TEXT,
+                      l3 TEXT,
+                      l4 TEXT,
+                      l5 TEXT,
+                      l6 TEXT,
+                      l7 TEXT,
+                      l8 TEXT,
+                      PRIMARY KEY (id)
+                    )");
+                    $con->query("INSERT INTO `$username`.`$week` (id, class, time, monday, tuesday, wednesday, thursday, friday, notes, s1, s2, s3, s4, s5, s6, s7, s8, l1, l2, l3, l4, l5, l6, l7, l8) VALUES (NULL, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '')");
+                  }
+
+                }
+                $rowcountquery = "SELECT * FROM `$week`";
+                $rowcountresult = mysqli_query($con, $rowcountquery);
+                $rowcount = mysqli_num_rows($rowcountresult);
+                for ($x = 0; $x < $rowcount; $x++) {
+                  $srow = 's'.$x;
+                  $sql_query = "SELECT id, class, time, monday, tuesday, wednesday, thursday, friday, notes, s1, s2, s3, s4, s5, s6, s7, s8, l1, l2, l3, l4, l5, l6, l7, l8 FROM `$week` LIMIT $x,1";
+                  $resultset = mysqli_query($con, $sql_query) or die("database error:". mysqli_error($con));
+                  while( $developer = mysqli_fetch_assoc($resultset) ) {
+                  ?>
+                  <tr style="height: 70px; vertical-align: middle;" id="<?php echo $developer ['id']; ?>">
+                    <td style="position: relative; padding: 0 !important; border-left: 0 !important;" id="class">
+                      <div style="position: absolute; width: 100% !important; height: 100% !important; display: flex; justify-content: center; align-items: center; <?php echo $developer ['s1']; ?>">
+                        <div style="position: relative;min-width: calc(100% - 4px);min-height: 14px;text-align: center;padding: 2px !important;" contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'class', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'class', this.innerHTML);"><?php echo $developer ['class']; ?></div>
+                      </div>
+                      <div style="position: absolute; right: 0; bottom: 0; style: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l1']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l1', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l1');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                        <div hidden id="imgsettings" class="dropdown">
+                          <button style="display: flex; align-items: center;" class="dropbtn glyphicon glyphicon-cog"></button>
+                          <div class="dropdown-content">
+                            <span class="table-up glyphicon glyphicon-arrow-up"></span>
+                            <span class="table-down glyphicon glyphicon-arrow-down"></span>
+                            <span class="table-remove glyphicon glyphicon-remove"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="position: relative; padding: 0 !important; border-left: 0 !important;">
+                      <div style="position: absolute; width: 100% !important; height: 100% !important; display: flex; justify-content: center; align-items: center; <?php echo $developer ['s2']; ?>">
+                        <div style="position: relative;min-width: calc(100% - 4px);min-height: 14px;text-align: center;padding: 2px !important;" contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'time', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'time', this.innerHTML);"><?php echo $developer ['time']; ?></div>
+                      </div>
+                      <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l2']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l2', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l2');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      </div>
+                    </td>
+                    <td style="position: relative;">
+                      <div contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'monday', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'monday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word; <?php echo $developer ['s3']; ?>"><?php echo $developer ['monday']; ?></div>
+                      <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l3']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l3', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l3');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      </div>
+                    </td>
+                    <td style="position: relative;">
+                      <div contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'tuesday', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'tuesday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word; <?php echo $developer ['s4']; ?>"><?php echo $developer ['tuesday']; ?></div>
+                      <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l4']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l4', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l4');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      </div>
+                    </td>
+                    <td style="position: relative;">
+                      <div contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'wednesday', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'wednesday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word; <?php echo $developer ['s5']; ?>"><?php echo $developer ['wednesday']; ?></div>
+                      <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l5']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l5', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l5');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      </div>
+                    </td>
+                    <td style="position: relative;">
+                      <div contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'thursday', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'thursday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word; <?php echo $developer ['s6']; ?>"><?php echo $developer ['thursday']; ?></div>
+                      <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l6']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l6', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l6');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      </div>
+                    </td>
+                    <td style="position: relative;">
+                      <div contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'friday', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'friday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word; <?php echo $developer ['s7']; ?>"><?php echo $developer ['friday']; ?></div>
+                      <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l7']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l7', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l7');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      </div>
+                    </td>
+                    <td style="position: relative; border-right: 0 !important;">
+                      <div contenteditable="true" onkeyup="CellChange(<?php echo $developer ['id']; ?>, 'notes', this.innerHTML);" onpaste="CellChange(<?php echo $developer ['id']; ?>, 'notes', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; <?php echo $developer ['s8']; ?>"><?php echo $developer ['notes']; ?></div>
+                      <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                        <?php
+                        $linesspace=explode("\n", $developer['l8']);
+                        $lines=array_values(array_filter($linesspace, 'strlen'));
+                        for ($xx = 0; $xx < count($lines); $xx++) {
+                        ?>
+                        <div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'>
+                          <div id="hyperlinkadd" onclick="window.open('<?php echo str_replace('*~*%','',$lines[$xx]) ?>')" class='hyperlinkadd glyphicon glyphicon-link'></div>
+                          <div class='dropdownlink-content'>
+                            <span onclick="$(this).parent().parent().remove(); LinkRemove(<?php echo $developer ['id']; ?>, 'l8', '<?php echo $lines[$xx] ?>');" class='linkremove glyphicon glyphicon-remove'></span>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <div hidden id="imgadd" onclick="AddLink(<?php echo $developer ['id']; ?>, 'l8');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      </div>
+                    </td>
+                  </tr>
+                  <?php }
+                } ?>
+                <!-- This is our clonable table line -->
+                <tr style="height: 70px; vertical-align: middle;" class="hide" id="-1">
+                  <td style="position: relative; padding: 0 !important; border-left: 0 !important; text-align: center; vertical-align: middle;" id="class">
+                    <div style="position: absolute; width: 100% !important; height: 100% !important; display: flex; justify-content: center; align-items: center;">
+                      <div style="position: relative;min-width: calc(100% - 4px);min-height: 14px;text-align: center;padding: 2px !important;" contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'class', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'class', this.innerHTML);"></div>
+                    </div>
+                    <div style="position: absolute; right: 0; bottom: 0; style: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l1');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                      <div hidden id="imgsettings" class="dropdown">
+                        <button style="display: flex; align-items: center;" class="dropbtn glyphicon glyphicon-cog"></button>
+                        <div class="dropdown-content">
+                          <span class="table-up glyphicon glyphicon-arrow-up"></span>
+                          <span class="table-down glyphicon glyphicon-arrow-down"></span>
+                          <span class="table-remove glyphicon glyphicon-remove"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="position: relative; padding: 0 !important; text-align: center; vertical-align: middle;">
+                    <div style="position: absolute; width: 100% !important; height: 100% !important; display: flex; justify-content: center; align-items: center;">
+                      <div style="position: relative;min-width: calc(100% - 4px);min-height: 14px;text-align: center;padding: 2px !important;" contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'time', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'time', this.innerHTML);"></div>
+                    </div>
+                    <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l2');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                    </div>
+                  </td>
+                  <td style="position: relative;">
+                    <div contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'monday', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'monday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word;"></div>
+                    <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l3');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                    </div>
+                  </td>
+                  <td style="position: relative;">
+                    <div contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'tuesday', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'tuesday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word;"></div>
+                    <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l4');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                    </div>
+                  </td>
+                  <td style="position: relative;">
+                    <div contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'wednesday', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'wednesday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word;"></div>
+                    <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l5');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                    </div>
+                  </td>
+                  <td style="position: relative;">
+                    <div contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'thursday', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'thursday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word;"></div>
+                    <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l6');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                    </div>
+                  </td>
+                  <td style="position: relative;">
+                    <div contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'friday', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'friday', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word;"></div>
+                    <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l7');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                    </div>
+                  </td>
+                  <td style="position: relative; border-right: 0 !important;">
+                    <div contenteditable="true" onkeyup="CellChange($(this).closest('tr').attr('id'), 'notes', this.innerHTML);" onpaste="CellChange($(this).closest('tr').attr('id'), 'notes', this.innerHTML);" style="position: absolute; left:0; top:0; text-align: left; width: calc(100% - 4px) !important; height: calc(100% - 4px) !important; padding: 2px !important; word-wrap:break-word;"></div>
+                    <div style="position: absolute; right: 0; bottom:0; display: inline;">
+                      <div hidden id="imgadd" onclick="AddLink($(this).closest('tr').attr('id'), 'l8');" style="display: none; padding: 4px 4px 4px 0px;" class="hyperlinkadd glyphicon glyphicon-plus-sign"></div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</html>
+
+<script type="text/javascript">
+
+  var linkdataA;
+  var linkdataB;
+
+  function AddLink(a,b){
+    document.getElementById("id01").style.display = "block";
+    linkdataA = a; //row
+    linkdataB = b; //column
+  }
+
+  //remove needs to remove right link if duplicates
+  function LinkRemove(row,column,link){
+    var datesend;
+    if(urlParams.get("sel")=== null){
+      datesend = date;
+    } else {
+      datesend = urlParams.get("sel");
+    }
+    $.ajax({
+      method: "POST",
+      url: "live_edit.php",
+      data: {
+        a: row,  //row
+        b: column,  //column title
+        c: link,  //data
+        d: 'linkdelete',
+        e: datesend
+    }
+    });
+  }
+
+  function LinkClick() {
+    $("#tableactual > tbody > tr > td").find('#imgadd').hide();
+    $("#tableactual > tbody > tr > td").find('#imgsettings').hide();
+  }
+
+  function AddLinkData(c){
+    var isclass = ')';
+    if ($('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').id !== 'class' ){
+      isclass = ') > div:nth-child(2)';
+    }
+    var prefix = 'http://';
+    var prefixs = 'https://';
+    var d = c;
+    if ((c.substr(0, prefix.length) !== prefix) && (c.substr(0, prefixs.length) !== prefixs))
+    {
+        d = prefix + '' + c;
+    }
+
+    var linkhtml = "<div id='linksettings' style='display: inline; padding: 4px 4px 4px 4px;' class='dropdownlink'><div id='hyperlinkadd' onclick='window.open(\"" + d + "\")' class='hyperlinkadd glyphicon glyphicon-link'></div><div class='dropdownlink-content'><span onclick='$(this).parent().parent().remove(); LinkRemove(\"" + linkdataA + "\", \"" + linkdataB + "\", \"" + '*~*%'+d+'*~*%' + "\");' class='linkremove glyphicon glyphicon-remove'></span></div></div>";
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+isclass).prepend(linkhtml);
+    document.getElementById("flink").value = "";
+
+    var datesend;
+    if(urlParams.get("sel")=== null){
+      datesend = date;
+    } else {
+      datesend = urlParams.get("sel");
+    }
+    $.ajax({
+      method: "POST",
+      url: "live_edit.php",
+      data: {
+        a: linkdataA,  //row
+        b: linkdataB,  //column title
+        c: '*~*%'+d+'*~*%',  //data
+        d: 'link',
+        e: datesend
+    }
+    });
+  }
+
+  bottomborder();
+  var $TABLE = $('#table');
+
+  $('.table-add').click(function () {
+    var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
+    var rowafter = $('#tableactual > tbody > tr').length-1;
+    $clone.prop('id',rowafter+1)
+    $('#tableactual > tbody > tr').eq(rowafter-1).after($clone);
+    var rows = $('#tableactual > tbody > tr').length - 1;
+    var datesend;
+    if(urlParams.get("sel")=== null){
+      datesend = date;
+    } else {
+      datesend = urlParams.get("sel");
+    }
+    $.ajax({
+      method: "POST",
+      async: false,
+      url: "live_edit.php",
+      data: {
+        a: rows,     //# rows
+        b: 'blank',  //
+        c: 'blank',  //
+        d: 'add',
+        e: datesend
+      }
+    });
+    bottomborder();
+  });
+
+  $('.table-remove').click(function () {
+    $(this).parents('tr').detach();
+    var row = $(this).parents('tr').attr('id');
+    var datesend;
+    if(urlParams.get("sel")=== null){
+      datesend = date;
+    } else {
+      datesend = urlParams.get("sel");
+    }
+    $.ajax({
+      method: "POST",
+      async: false,
+      url: "live_edit.php",
+      data: {
+        a: row,     //# row deleted
+        b: 'blank',  //
+        c: 'blank',  //
+        d: 'remove',
+        e: datesend
+      }
+    });
+    bottomborder();
+    $('#tableactual > tbody > tr:nth-child(' + (row) + ')').prop('id',row);
+  });
+
+  $('.table-up').click(function () {
+    var $row = $(this).parents('tr');
+    if ($row.index() === 0) return; // Don't go above the header
+    $row.prev().before($row.get(0));
+    var row = $(this).parents('tr').attr('id');
+    var datesend;
+    if(urlParams.get("sel")=== null){
+      datesend = date;
+    } else {
+      datesend = urlParams.get("sel");
+    }
+    $.ajax({
+      method: "POST",
+      url: "live_edit.php",
+      data: {
+        a: row,     //# row deleted
+        b: 'blank',  //
+        c: 'blank',  //
+        d: 'up',
+        e: datesend
+      }
+    });
+    $(this).parents('tr').prop('id','-1');
+    $('#tableactual > tbody > tr:nth-child(' + (row) + ')').prop('id',row);
+    $(this).parents('tr').prop('id',row-1);
+    bottomborder();
+  });
+
+  $('.table-down').click(function () {
+    var $row = $(this).parents('tr');
+    if ($row.index() === $('#tableactual > tbody > tr').length-2) return;
+    $row.next().after($row.get(0));
+    var row = $(this).parents('tr').attr('id');
+    var datesend;
+    if(urlParams.get("sel")=== null){
+      datesend = date;
+    } else {
+      datesend = urlParams.get("sel");
+    }
+    $.ajax({
+      method: "POST",
+      url: "live_edit.php",
+      data: {
+        a: row,     //# row deleted
+        b: 'blank',  //
+        c: 'blank',  //
+        d: 'down',
+        e: datesend
+      }
+    });
+    $(this).parents('tr').prop('id','-1');
+    $('#tableactual > tbody > tr:nth-child(' + (row) + ')').prop('id',(row));
+    $(this).parents('tr').prop('id',(Number(row) + 1));
+    bottomborder();
+  });
+
+  function CellChange(a,b,c) {
+    var datesend;
+    if(urlParams.get("sel")=== null){
+      datesend = date;
+    } else {
+      datesend = urlParams.get("sel");
+    }
+    $.ajax({
+      method: "POST",
+      url: "live_edit.php",
+      data: {
+        a: a,  //row
+        b: b,  //column title
+        c: c,  //data
+        d: 'change',
+        e: datesend
+      }
+    });
+  }
+
+  var lastcolumn = 1;
+  var lastrow = 1
+
+  $(".table-bordered td").click(function() { // td not tr
+     lastcolumn = $(this).index() + 1 ;
+  });
+  $(".table-bordered tr").click(function() { // td not tr
+     lastrow = $(this).index() + 1;
+  });
+
+  $(function() {
+    $("#tableactual > tbody > tr > td").click(function(e) {
+      if(e.target.id !== "hyperlinkadd"){
+        $("#tableactual > tbody > tr > td").find('#imgadd').hide();
+        $(this).find('#imgadd').show();
+
+        $("#tableactual > tbody > tr > td").find('#imgsettings').hide();
+        $(this).find('#imgsettings').show();
+
+        $("#tableactual > tbody > tr > td").find('#linksettings').removeClass('addHover');
+        $(this).find('#linksettings').each(function (index, element) {
+          $(element).addClass('addHover');
+        });
+      }
+    });
+  })
+
+  $(function() {
+    $("body").click(function(e) {
+      if (e.target.id == "tableactual" || $(e.target).parents("#tableactual > tbody > tr > td").length) {
+        //inside
+      } else {
+        //outside
+        $("#tableactual > tbody > tr > td").find('#imgadd').hide();
+        $("#tableactual > tbody > tr > td").find('#imgsettings').hide();
+        $("#tableactual > tbody > tr > td").find('#linksettings').removeClass('addHover');
+      }
+    });
+  })
+
+  function colorSelect(a) {
+    var isclass = ')';
+    if ($('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').id !== 'class' ){
+      isclass = ') > div:nth-child(1)';
+    }
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+isclass).each(function(item) {
+      this.style.cssText  += 'background-color: ' + a;
+      var datesend;
+      if(urlParams.get("sel")=== null){
+        datesend = date;
+      } else {
+        datesend = urlParams.get("sel");
+      }
+      $.ajax({
+        method: "POST",
+        url: "live_edit.php",
+        data: {
+          a: lastrow,  //row
+          b: lastcolumn,  //column title
+          c: this.style.cssText,  //data
+          d: 'style',
+          e: datesend
+      }
+      });
+    });
+  }
+
+  function colorGreen() {
+    var isclass = ')';
+    if ($('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').id !== 'class' ){
+      isclass = ') > div:nth-child(1)';
+    }
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+isclass).each(function(item) {
+      this.style.cssText  += 'background-color: #C6E0B3;';
+      var datesend;
+      if(urlParams.get("sel")=== null){
+        datesend = date;
+      } else {
+        datesend = urlParams.get("sel");
+      }
+      $.ajax({
+        method: "POST",
+        url: "live_edit.php",
+        data: {
+          a: lastrow,  //row
+          b: lastcolumn,  //column title
+          c: this.style.cssText,  //data
+          d: 'style',
+          e: datesend
+      }
+      });
+    });
+  }
+
+  function colorBlue() {
+    var isclass = ')';
+    if ($('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').id !== 'class' ){
+      isclass = ') > div:nth-child(1)';
+    }
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+isclass).each(function(item) {
+      this.style.cssText  += 'background-color: #BDD7EE;';
+      var datesend;
+      if(urlParams.get("sel")=== null){
+        datesend = date;
+      } else {
+        datesend = urlParams.get("sel");
+      }
+      $.ajax({
+        method: "POST",
+        url: "live_edit.php",
+        data: {
+          a: lastrow,  //row
+          b: lastcolumn,  //column title
+          c: this.style.cssText,  //data
+          d: 'style',
+          e: datesend
+      }
+      });
+    });
+  }
+
+  function colorGray() {
+    var isclass = ')';
+    if ($('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').id !== 'class' ){
+      isclass = ') > div:nth-child(1)';
+    }
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+isclass).each(function(item) {
+      this.style.cssText  += 'background-color: #DBDBDB;';
+      var datesend;
+      if(urlParams.get("sel")=== null){
+        datesend = date;
+      } else {
+        datesend = urlParams.get("sel");
+      }
+      $.ajax({
+        method: "POST",
+        url: "live_edit.php",
+        data: {
+          a: lastrow,  //row
+          b: lastcolumn,  //column title
+          c: this.style.cssText,  //data
+          d: 'style',
+          e: datesend
+      }
+      });
+    });
+  }
+
+  function bottomborder() {
+    $('#tableactual > tbody > tr').find('td').each(function(item) {
+      this.style.cssText = this.style.cssText.replace("border-bottom: none !important;","")
+    });
+    $('#tableactual > tbody').find('tr.hide').each(function(item) {
+      this.style.cssText += 'border-bottom: none !important;';
+    });
+    $('#tableactual > tbody > tr:nth-last-child(1)').find('td').each(function(item) {
+      this.style.cssText += 'border-bottom: none !important;';
+    });
+  }
+
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  }
+
+  function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+  }
+
+  textDateUpdate();
+</script>

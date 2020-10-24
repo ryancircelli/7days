@@ -1,0 +1,258 @@
+                <!--
+                  <td style="vertical-align: middle; border-left: 0px !important; text-align: center;" onkeyup="<?php $con->query('UPDATE $username.$week SET class=\'this.value\' WHERE id=$x');?>">
+                -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>7days</title>
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <div class="main">
+    <div class= "menu">
+        <a href="about.html">
+            <img src="planner.png" width="100" height="100"></img>
+        </a>
+        <a href="index.html" class="menufont">This Week</a>
+        <a href="weekselector.html" class="menufont">Select Week</a></li>
+        <a href="todo.html" class="menufont">To-Do hyper link and save data</a></li>
+    </div>
+    <div class="body">
+      <div class="invest">
+        <div class="investbox">
+          <h1 id="tablename" style="color: #595959; font: bold 36pt Tahoma,'Segoe UI',Calibri,Thonburi,Arial,Verdana,Sans-Serif,'Mongolian Baiti','Microsoft Yi Baiti','Javanese Text';  background-color:white; margin: 0px; line-height: 80px;" class="Table">Schedule</h1>
+          <button style="position: absolute; right: 60px; top: 115px;" onclick="colorGreen()">Green</button>
+          <button style="position: absolute; right: 114px; top: 115px;" onclick="colorBlue()">Blue</button>
+          <button style="position: absolute; right: 157px; top: 115px;" onclick="colorGray()">Gray</button>
+          <div id="table" class="table-editable">
+            <table id="tableactual" class="table table-bordered">
+              <thead>
+                <tr>
+                  <th class="tableheader" style="width: 11%;  max-width: 11%; border-right: 0px !important;">
+                    <p class="table-add-text">Class</p> 
+                    <p style="float: right; margin-right: 5px;" class="table-add glyphicon glyphicon-plus"></p>
+                  </th>
+                  <th class="tableheader" style="width: 5%; max-width: 5%;">Time</th>
+                  <th class="tableheader" style="width: 14%; max-width: 14%;" id="monday">Monday</th>
+                  <th class="tableheader" style="width: 14%; max-width: 14%;" id="tuesday">Tuesday</th>
+                  <th class="tableheader" style="width: 14%; max-width: 14%;" id="wednesday">Wednesday</th>
+                  <th class="tableheader" style="width: 14%; max-width: 14%;" id="thursday">Thursday</th>
+                  <th class="tableheader" style="width: 14%; max-width: 14%;" id="friday">Friday</th>
+                  <th class="tableheader" style="width: 14%; max-width: 14%; border-right: 0px !important;">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="height: 70px; vertical-align: middle;">
+                  <td style="vertical-align: middle; border-left: 0px !important; text-align: center; border-bottom: none !important;">
+                    <p style="display:inline-block; vertical-align: middle; margin: 5px 0px 0px 0px;" contenteditable="true"></p>
+                    <div class="dropdown">
+                      <button class="dropbtn glyphicon glyphicon-cog"></button>
+                      <div class="dropdown-content">
+                        <span class="table-up glyphicon glyphicon-arrow-up"></span>
+                        <span class="table-down glyphicon glyphicon-arrow-down"></span>
+                        <span class="table-remove glyphicon glyphicon-remove"></span>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="vertical-align: middle;  text-align: center; border-bottom: none !important;" contenteditable="true"></td>
+                  <td style="border-bottom: none !important;" contenteditable="true"></td>
+                  <td style="border-bottom: none !important;" contenteditable="true"></td>
+                  <td style="border-bottom: none !important;" contenteditable="true"></td>
+                  <td style="border-bottom: none !important;" contenteditable="true"></td>
+                  <td style="border-bottom: none !important;" contenteditable="true"></td>
+                  <td style="border-right: 0px !important; border-bottom: none !important;" contenteditable="true"></td>
+                </tr>
+                <!-- This is our clonable table line -->
+                <tr  style="height: 70px; vertical-align: middle;" class="hide">
+                  <td style="border-left: 0px !important; text-align: center; vertical-align: middle;">
+                    <p style="display:inline-block; vertical-align: middle; margin: 5px 0px 0px 0px;" contenteditable="true"></p>
+                    <div class="dropdown">
+                      <button class="dropbtn glyphicon glyphicon-cog"></button>
+                      <div class="dropdown-content">
+                        <span class="table-up glyphicon glyphicon-arrow-up"></span>
+                        <span class="table-down glyphicon glyphicon-arrow-down"></span>
+                        <span class="table-remove glyphicon glyphicon-remove"></span>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="vertical-align: middle; text-align: center;" contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td style="border-right: 0px !important;" contenteditable="true"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</html>
+
+<script type="text/javascript">
+  var $TABLE = $('#table');
+
+  $('.table-add').click(function () {
+    var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
+    $TABLE.find('table').append($clone);
+    bottomborder();
+  });
+
+  $('.table-remove').click(function () {
+    $(this).parents('tr').detach();
+    bottomborder();
+  });
+
+  $('.table-up').click(function () {
+    var $row = $(this).parents('tr');
+    if ($row.index() === 1) return; // Don't go above the header
+    $row.prev().before($row.get(0));
+    bottomborder();
+  });
+
+  $('.table-down').click(function () {
+    var $row = $(this).parents('tr');
+    $row.next().after($row.get(0));
+    bottomborder();
+  });
+
+  var lastcolumn = 3;
+  var lastrow = 1
+
+  $(".table-bordered td").click(function() { // td not tr
+     lastcolumn = $(this).index() + 1 ;
+  });
+  $(".table-bordered tr").click(function() { // td not tr
+     lastrow = $(this).index() + 1;
+  });
+
+  function colorGreen() {
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').each(function(item) {
+      this.style.cssText  += 'background-color: #C6E0B3;';
+    });
+  }
+
+  function colorBlue() {
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').each(function(item) {
+      this.style.cssText  += 'background-color: #BDD7EE;';
+    });
+  }
+
+  function colorGray() {
+    $('#tableactual > tbody > tr:nth-child('+lastrow+') > td:nth-child('+lastcolumn+')').each(function(item) {
+      this.style.cssText  += 'background-color: #DBDBDB;';
+    });
+  }
+
+  function bottomborder() {
+    if($('#tableactual > tbody > tr').length === 4){
+      $('#tableactual > tbody > tr').find('td').each(function(item) {
+        this.style.cssText = this.style.cssText.replace("border-bottom: none !important;","")
+      });
+      $('#tableactual > tbody > tr:nth-last-child(1)').find('td').each(function(item) {
+        this.style.cssText += 'border-bottom: none !important;';
+      });
+    } else {
+      $('#tableactual > tbody > tr').find('td').each(function(item) {
+        this.style.cssText = this.style.cssText.replace("border-bottom: none !important;","")
+      });
+      $('#tableactual > tbody > tr:nth-last-child(1)').find('td').each(function(item) {
+        this.style.cssText += 'border-bottom: none !important;';
+      });
+    }
+  }
+
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  }
+
+  function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+  }
+
+  var date0 = new Date;
+  var date1;
+  if(date0.getDay() === 0){
+    date1 = date0.addDays(1);
+  } else if(date0.getDay() === 1){
+    date1 = date0;
+  } else if(date0.getDay() === 2){
+    date1 = date0.addDays(-1);
+  } else if(date0.getDay() === 3){
+    date1 = date0.addDays(-2);
+  } else if(date0.getDay() === 4){
+    date1 = date0.addDays(-3);
+  } else if(date0.getDay() === 5){
+    date1 = date0.addDays(-4);
+  } else if(date0.getDay() === 6){
+    date1 = date0.addDays(-5);
+  }
+  var date2 = date1.addDays(1);
+  var date3 = date2.addDays(1);
+  var date4 = date3.addDays(1);
+  var date5 = date4.addDays(1);
+  var tablename = "Schedule (" + (date1.getMonth()+1) + "/" + date1.getDate() + "-" + (date5.getMonth()+1) + "/" + date5.getDate() +")";
+  document.getElementById("tablename").innerHTML = tablename;
+  document.getElementById("monday").innerHTML = "Mon " + ordinal_suffix_of(date1.getDate());
+  document.getElementById("tuesday").innerHTML = "Tue " + ordinal_suffix_of(date2.getDate());
+  document.getElementById("wednesday").innerHTML = "Wed " + ordinal_suffix_of(date3.getDate());
+  document.getElementById("thursday").innerHTML = "Thu " + ordinal_suffix_of(date4.getDate());
+  document.getElementById("friday").innerHTML = "Fri " + ordinal_suffix_of(date5.getDate());
+
+  const convertLinks = ( input ) => {
+
+    let text = input;
+    const linksFound = text.match( /(?:www|https?)[^\s]+/g );
+    const aLink = [];
+
+    if ( linksFound != null ) {
+
+      for ( let i=0; i<linksFound.length; i++ ) {
+        let replace = linksFound[i];
+        if ( !( linksFound[i].match( /(http(s?)):\/\// ) ) ) { replace = 'http://' + linksFound[i] }
+        let linkText = replace.split( '/' )[2];
+        if ( linkText.substring( 0, 3 ) == 'www' ) { linkText = linkText.replace( 'www.', '' ) }
+        if ( linkText.match( /youtu/ ) ) {
+
+          let youtubeID = replace.split( '/' ).slice(-1)[0];
+          aLink.push( '<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/' + youtubeID + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>' )
+        }
+        else if ( linkText.match( /vimeo/ ) ) {
+          let vimeoID = replace.split( '/' ).slice(-1)[0];
+          aLink.push( '<div class="video-wrapper"><iframe src="https://player.vimeo.com/video/' + vimeoID + '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>' )
+        }
+        else {
+          aLink.push( '<a href="' + replace + '" target="_blank">' + linkText + '</a>' );
+        }
+        text = text.split( linksFound[i] ).map(item => { return aLink[i].includes('iframe') ? item.trim() : item } ).join( aLink[i] );
+      }
+      return text;
+    }
+    else {
+      return input;
+    }
+  }
+</script>

@@ -1,0 +1,120 @@
+<?php
+include("auth.html");
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>7days</title>
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <div class="main">
+    <div class= "menu">
+        <a href="about.html">
+            <img src="planner.png" width="100" height="100">
+        </a>
+        <a href="index.html" class="menufont">This Week</a>
+        <a href="weekselector.html" class="menufont" style="display:none !important;">Select Week</a>
+        <a href="todo.html" class="menufont">To-Do</a>
+        <div class="form" style="bottom: 0px; position: absolute;">
+            <p>Welcome <?php echo $_SESSION['username']; ?>!</p>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="logout.html">Logout</a>
+        </div>
+    </div>
+    <div class="body">
+      <div class="invest">
+        <div class="investbox">
+          <h1 style="color: #595959; font: bold 36pt Tahoma,'Segoe UI',Calibri,Thonburi,Arial,Verdana,Sans-Serif,'Mongolian Baiti','Microsoft Yi Baiti','Javanese Text';  background-color:white; margin: 0px; line-height: 80px;" class="Table">To-Do</h1>
+          <div id="table" class="table-editable">
+            <table id="tableactual" class="table table-bordered" style="height:100% !important;">
+              <thead>
+                <tr>
+                  <th class="tableheader" style="height:40px; padding-left: 10px !important;" width="60px" onclick="document.getElementById('todo').textContent  += ' • '; CellChange(document.getElementById('todo').innerHTML);">Insert •</th>
+                  <th class="tableheader" style="height:40px; padding-left: 10px !important;" width="30px" onclick="increaseFontSize(2); CellChange(document.getElementById('todo').innerHTML);">A+</th>
+                  <th class="tableheader" style="height:40px; padding-left: 10px !important;" width="30px" onclick="increaseFontSize(-2); CellChange(document.getElementById('todo').innerHTML);">A-</th>
+                  <th class="tableheader" style="height:40px; padding-left: 10px !important;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                $username = $_SESSION['username'];
+
+                $con = mysqli_connect("localhost","root","mysql","$username");
+                if (mysqli_connect_errno())
+                {
+                  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+                }
+                if (!$result = $con->query("DESCRIBE `todo`") ) {
+                  $con->query("CREATE TABLE `$username`.`todo` (
+                    id INT NOT NULL AUTO_INCREMENT,
+                    content TEXT,
+                    style TEXT,
+                    PRIMARY KEY (id)
+                  )");
+                  $con->query("INSERT INTO `$username`.`todo` (id, content, style) VALUES (NULL, '', '')");
+                }
+                $sql_query = "SELECT * FROM `todo`";
+                $resultset = mysqli_query($con, $sql_query) or die("database error:". mysqli_error($con));
+                while( $developer = mysqli_fetch_assoc($resultset) ) {
+                ?>
+                <tr style="width:100% !important;"">
+                  <td colspan="4" style="border: 0px !important;">
+                    <div style="outline: none !important; height: 100%; background-color: #DBDBDB; padding: 10px !important; font-size: 14px; <?php echo $developer ['style']; ?>" id="todo" onkeyup="CellChange(this.innerHTML);" onpaste="CellChange(this.innerHTML);" contenteditable="true">
+                      <?php echo $developer ['content']; ?>
+                    </div>
+                  </td>
+                </tr>
+                <?php }
+                ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</html>
+
+<script type="text/javascript">
+  function increaseFontSize(increaseFactor) {
+    txt = document.getElementById('todo');
+    style = window.getComputedStyle(txt, null).getPropertyValue('font-size');
+    currentSize = parseFloat(style);
+    txt.style.fontSize = (currentSize + increaseFactor) + 'px';
+
+    $.ajax({
+      method: "POST",
+      url: "live_edit.php",
+      data: {
+        a: '1',  //row
+        b: 'tyle',  //column title weird but works
+        c: String('font-size: ' + (currentSize + increaseFactor) + 'px'),  //data
+        d: 'style',
+        e: 'todo'
+    }
+    });
+  }
+
+
+  function CellChange(a) {
+    $.ajax({
+      method: "POST",
+      url: "live_edit.php",
+      data: {
+        a: '1',  //row
+        b: 'content',  //column title
+        c: a,  //data
+        d: 'change',
+        e: 'todo'
+      }
+    });
+  }
+
+</script>

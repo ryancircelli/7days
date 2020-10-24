@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Registration</title>
+<link rel="stylesheet" href="css/style.css" />
+</script>
+<script>
+  // Creating a cookie after the document is ready 
+
+  Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+  }
+
+  var date0 = new Date;
+  var date1;
+  if(date0.getDay() === 0){
+    date1 = date0.addDays(1);
+  } else if(date0.getDay() === 1){
+    date1 = date0;
+  } else if(date0.getDay() === 2){
+    date1 = date0.addDays(-1);
+  } else if(date0.getDay() === 3){
+    date1 = date0.addDays(-2);
+  } else if(date0.getDay() === 4){
+    date1 = date0.addDays(-3);
+  } else if(date0.getDay() === 5){
+    date1 = date0.addDays(-4);
+  } else if(date0.getDay() === 6){
+    date1 = date0.addDays(-5);
+  }
+  //sets date to monday of that week
+
+  var date = date1.getMonth()+1 + "/" + date1.getDate() + "/" + date1.getFullYear();
+
+  if (getCookie("getTime")==="") {
+    createCookie("getTime", date, "1"); 
+    location.reload();
+  }
+  // Function to create the cookie 
+  function createCookie(name, value, days) { 
+    var expires;
+    if (days) { 
+      var date = new Date(); 
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); 
+      expires = "; expires=" + date.toGMTString(); 
+    } 
+    else { 
+      expires = ""; 
+    } 
+    document.cookie = escape(name) + "=" + escape(value) + expires + "; path=/"; 
+  }
+  function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+</script>
+</head>
+<body>
+<?php
+if(isset($_COOKIE['getTime'])){
+  $week = $_COOKIE["getTime"];
+require('db.html');
+// If form submitted, insert values into the database.
+if (isset($_REQUEST['username'])){
+        // removes backslashes
+ $username = stripslashes($_REQUEST['username']);
+        //escapes special characters in a string
+ $username = mysqli_real_escape_string($con,$username); 
+ $email = stripslashes($_REQUEST['email']);
+ $email = mysqli_real_escape_string($con,$email);
+ $password = stripslashes($_REQUEST['password']);
+ $password = mysqli_real_escape_string($con,$password);
+ $trn_date = date("Y-m-d H:i:s");
+        $query = "INSERT into `users` (username, password, email, trn_date)
+VALUES ('$username', '".md5($password)."', '$email', '$trn_date')";
+        $result = mysqli_query($con,$query);
+
+ $con = mysqli_connect("localhost","root","mysql");
+ // Check connection
+ if (mysqli_connect_errno())
+ {
+   echo "Failed to connect to MySQL: " . mysqli_connect_error();
+ }
+ $con->query("ALTER TABLE register.users DROP `id`");
+ $con->query("ALTER TABLE register.users ADD `id` INT NOT NULL AUTO_INCREMENT FIRST , ADD PRIMARY KEY (`id`)");
+
+ $con->query("CREATE DATABASE `$username`");
+ $con->query("CREATE TABLE `$username`.`$week` (
+         id INT NOT NULL AUTO_INCREMENT,
+         class TEXT,
+         time TEXT,
+         monday TEXT,
+         tuesday TEXT,
+         wednesday TEXT,
+         thursday TEXT,
+         friday TEXT,
+         notes TEXT,
+         s1 TEXT,
+         s2 TEXT,
+         s3 TEXT,
+         s4 TEXT,
+         s5 TEXT,
+         s6 TEXT,
+         s7 TEXT,
+         s8 TEXT,
+         PRIMARY KEY (id)
+ )");
+ $con->query("INSERT INTO `$username`.`$week` (id, class, time, monday, tuesday, wednesday, thursday, friday, notes, s1, s2, s3, s4, s5, s6, s7, s8) VALUES (NULL, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '')");
+
+        if($result){
+            echo "<div class='form'>
+<h3>You are registered successfully.</h3>
+<br/>Click here to <a href='login.html'>Login</a></div>";
+        }
+    }else{
+?>
+<div class="form">
+<h1>Registration</h1>
+<form name="registration" action="" method="post">
+<input type="text" name="username" placeholder="Username" required />
+<input type="email" name="email" placeholder="Email" required />
+<input type="password" name="password" placeholder="Password" required />
+<input type="submit" name="submit" value="Register" />
+</form>
+</div>
+<?php } }?>
+</body>
+</html>
