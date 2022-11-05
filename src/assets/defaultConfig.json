@@ -1,0 +1,15 @@
+{
+  "extraProperties": [
+    {
+      "name": "Class",
+      "type": "dropdown",
+      "options": [
+        "CDA3101",
+        "CAP3032"
+      ]
+    }, {
+      "name": "Recording",
+      "type": "url"
+    }
+  ]
+}
