@@ -1,65 +1,28 @@
-export const convertDate = (date_string, time, clump) => {
-  let date_time  = new Date(date_string);
-  let today_time = new Date().setHours(0,0,0,0);
+import { DateTime } from 'luxon'
 
-  let date  = new Date(new Date(date_string).setHours(0,0,0,0));
-  let today = new Date(new Date().setHours(0,0,0,0));
+export const convertDate = (date_string) => {
+  let date  = DateTime.fromISO(date_string).startOf('day');
+  let today = DateTime.now().startOf('day')
+  let date_time = DateTime.fromISO(date_string);
 
-  let status = "error";
-  let day = "error";
+  let day = date.toFormat("LLL d");
+  let time = date_time.toFormat("t");
+  let daysDiff = date.diff(today, 'days').as('days');
 
-  if (date.getTime() === today.getTime()) {
-    status = today_time > date_time ? "today" : "future";
+  if (daysDiff === 0) {
     day = "Today";
-  } else if (date.getTime() === addDays(today, 1).getTime()) {
-    status = "future";
+  } else if (daysDiff === 1) {
     day = "Tomorrow";
-  } else if (date.getTime() === addDays(today, -1).getTime()) {
-    status = "past";
+  } else if (daysDiff === -1) {
     day = "Yesterday";
-  } else if (clump === true) {
-    if(date.getTime() < addDays(today, -1).getTime()) {
-      status = "past";
-      day = "Overdue";
-    } else if (date.getTime() > addDays(today, 6).getTime()) {
-      status = "future";
-      day = "Future";
-    }
-  } else {
-    if (date.getTime() > addDays(today, 1).getTime() && date.getTime() < addDays(today, 6).getTime()) {
-      status = "future";
-      day = getDayOfWeek(date);
-    } else {
-      status = "future";
-      day = date.toLocaleString('en-US', {
-        month: "short",
-        day: "numeric"
-      });
-    }
-  }
-
-  if (time) {
-    let hours = date_time.getHours() % 12 || 12;
-    let minutes = String(date_time.getMinutes()).padStart(2, '0');
-    let ampm = date_time.getHours() >= 12 ? "pm" : "am";
-    day += ', ' + hours;
-    if (minutes > 0)
-      day += ':' + minutes;
-    day += ampm;
+  } else if (daysDiff < 6 && daysDiff > 1) {
+    day = date.toFormat("ccc");
   }
 
   return {
-    day: day,
-    status: status
+    date: day,
+    clumped_date: daysDiff > 6 ? "Future" : daysDiff < 0 ? "Overdue" : day,
+    time:  time.slice(-6, -3) === ":00" ? time.slice(0, -6) + time.slice(-2).toLowerCase() : time.slice(0, -3) + time.slice(-2).toLowerCase(),
+    status: daysDiff === 0 ? "today" : daysDiff > 0 ? "future" : "past"
   };
 }
-
-const addDays = (date, days) => {
-  var date = new Date(date);
-  date.setDate(date.getDate() + days);
-  return date;
-}
-
-const getDayOfWeek = (date) => {   
-  return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][ date.getDay() ];
-};

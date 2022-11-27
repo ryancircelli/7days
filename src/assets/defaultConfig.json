@@ -4,8 +4,14 @@
       "name": "Class",
       "type": "dropdown",
       "options": [
-        "CDA3101",
-        "CAP3032"
+        {
+          "name": "CDA3101",
+          "color": "#0076BE"
+        },
+        {
+          "name": "CAP3032",
+          "color": "#F05E16"
+        }
       ]
     }, {
       "name": "Recording",
