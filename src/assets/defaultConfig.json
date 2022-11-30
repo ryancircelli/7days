@@ -1,21 +1,59 @@
 {
   "extraProperties": [
     {
+      "name": "Recording",
+      "type": "url"
+    },
+    {
+      "name": "Link",
+      "type": "url"
+    },
+    {
+      "name": "Priority",
+      "type": "dropdown",
+      "options": [
+        {
+          "name": "1",
+          "color": "transparent",
+          "index": 1
+        },
+        {
+          "name": "2",
+          "color": "transparent",
+          "index:": 2
+        },
+        {
+          "name": "3",
+          "color": "transparent",
+          "index:": 3
+        },
+        {
+          "name": "4",
+          "color": "transparent",
+          "index:": 4
+        },
+        {
+          "name": "5",
+          "color": "transparent",
+          "index:": 5
+        }
+      ]
+    },
+    {
       "name": "Class",
       "type": "dropdown",
       "options": [
         {
           "name": "CDA3101",
-          "color": "#0076BE"
+          "color": "#0076BE",
+          "index": 1
         },
         {
           "name": "CAP3032",
-          "color": "#F05E16"
+          "color": "#F05E16",
+          "index:": 2
         }
       ]
-    }, {
-      "name": "Recording",
-      "type": "url"
     }
   ]
 }

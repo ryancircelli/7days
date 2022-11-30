@@ -1,16 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getTextWidth } from 'get-text-width';
 import parseUrl from "parse-url";
 import { updateEventPrivate } from 'gapi/events';
 
 export const Url = ({data, prop, getEvents}) => {
-  let placeholder = data.extendedProperties?.private[prop.name.toLowerCase()];
+  let placeholder = JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.[prop.name.toLowerCase()];
   const ref = useRef(null);
   const container = useRef(null);
   const [selected, setSelected] = useState(false);
   const [valid, setValid] = useState(false);
   const [parsedURL, setParsedURL] = useState(null);
   const [width, setWidth] = useState(0);
+  const [right, setRight] = useState(0);
+  const [alignCenter, setAlignCenter] = useState(true);
 
   const loadPlaceholder = () => {
     try {
@@ -32,14 +34,17 @@ export const Url = ({data, prop, getEvents}) => {
     } catch {
       setValid(false);
     }
-    setWidth(getTextWidth(evt.target.value ? evt.target.value : parsedURL?.resource))
   };
 
   const exitInput = async () => {
     setSelected(false);
     if (parsedURL && parsedURL.href !== null && placeholder !== parsedURL.href) {
+      setWidth(getTextWidth(parsedURL?.resource))
       let privateProps = {...data.extendedProperties?.private}
-      privateProps[prop.name.toLowerCase()] = parsedURL.href;
+      privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({
+        ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"]),
+        [prop.name.toLowerCase()]: parsedURL.href
+      })
       await updateEventPrivate(data, privateProps);
       getEvents();
     }
@@ -67,16 +72,26 @@ export const Url = ({data, prop, getEvents}) => {
     };
   }, []);
 
-  let right = container.current && container.current.offsetWidth - width - 32 - (parsedURL?.resource ? 8 : 0);
-  right = right > 0 ? right : 0;
+  useLayoutEffect(() => {
+    function updateRight() {
+      let right = container.current && (container.current.offsetWidth - width)/2 - 32;
+      right = right > 0 ? right : 0;
+      setRight(right)
+      setAlignCenter(container.current.offsetWidth > width);
+    }
+    window.addEventListener('resize', updateRight);
+    updateRight();
+    return () => window.removeEventListener('resize', updateRight);
+  }, [parsedURL?.resource, width]);
 
   return (
     <div 
       ref={container} 
-      className="group h-full w-full relative overflow-hidden"
+      className="group h-full w-full relative overflow-hidden flex justify-center items-center"
       style={{
-        borderWidth: valid || !selected ? 0 : "2px",
-        borderColor: "red"
+        borderWidth: !selected ? 0 : "1px",
+        borderColor: valid ? "black" : "red",
+        borderRadius: 4
       }}
     >
       { !selected ?
@@ -84,22 +99,22 @@ export const Url = ({data, prop, getEvents}) => {
           href={parsedURL?.href}
           target="_blank" 
           rel="noopener noreferrer"
+          className="h-full flex justify-center items-center"
         >
           <div
-            className="p-0 h-full flex items-center absolute left-0 peer border-0 bg-blue-700 placeholder:text-black focus:ring-0"
-            style={{ 
-              width: (width + (parsedURL?.resource ? 16 : 0)) +'px',
-              paddingLeft:  parsedURL?.resource ? '8px' : '0px'
+            className="p-0 h-full w-full absolute flex items-center peer border-0 placeholder:text-black focus:ring-0"
+            style={{
+              justifyContent: alignCenter ? "center" : "left"
             }}
           >
-            {parsedURL?.resource}
+            {parsedURL?.resource ? parsedURL?.resource : "-"}
           </div>
         </a>
       :
         <input 
           ref={ref}
           disabled={!selected}
-          className="p-0 h-full w-full absolute left-0 peer border-0 bg-blue-700 placeholder:text-black focus:ring-0"
+          className="p-0 h-full w-full absolute left-0 peer border-0 placeholder:text-black focus:ring-0"
           type="text" 
           onChange={changeHandler}
           onKeyDown={escapeHandler}

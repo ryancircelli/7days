@@ -8,10 +8,12 @@ import { Url } from './Url';
 export const Row = ({data, extraProps, getEvents}) => {
   return (
     <div className="flex flex-row h-12">
-      <Checkbox
-        data={data} 
-        getEvents={getEvents} 
-      />
+      <div className="flex w-8 justify-center items-center">
+        <Checkbox
+          data={data} 
+          getEvents={getEvents} 
+        />
+      </div>
       <div
         style={{
           flex: extraProps.length
@@ -23,7 +25,7 @@ export const Row = ({data, extraProps, getEvents}) => {
           getEvents={getEvents}
         />
       </div>
-      {extraProps.map((prop) => 
+      {extraProps.map((prop, index) => 
         <div
           key={prop.name}
           className="flex-1"
@@ -44,7 +46,7 @@ export const Row = ({data, extraProps, getEvents}) => {
               key={prop.name}
             />
           : 
-            data.extendedProperties?.private[prop.name.toLowerCase()] 
+            JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.[prop.name.toLowerCase()]
         }
         </div>
       )}

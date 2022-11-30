@@ -5,7 +5,7 @@ import { createEvent } from '../../gapi/events';
 import { getSettings, resetSettings } from '../../gapi/settings';
 import { getUserInfo } from '../../gapi/user';
 import { Header } from './Header/Header';
-import { List } from './List/List';
+import { EventList } from './List/EventList';
 
 export const Home = () => {
 
@@ -24,9 +24,9 @@ export const Home = () => {
   }, [calendar]);
 
   const get7days = useCallback(async () => {
-    let cal_7days = await getCalendarBySummary('7days');
-    if (cal_7days === false)
-      cal_7days = await createCalendar('7days')
+    let cal_7days = await getCalendarBySummary('ryancircelli@gmail.com');
+    // if (cal_7days === false)
+    //   cal_7days = await createCalendar('7days')
     setCalendar(cal_7days)
   }, [events]);
 
@@ -59,12 +59,13 @@ export const Home = () => {
     return <div/>
 
   return (
-    <div className='flex h-screen bg-red-900 flex-col'>
+    <div className='flex h-screen flex-col'>
       <Header/>
-      <List 
+      <EventList
         events={events} 
         settings={settings} 
         getEvents={getEvents}
+        className="px-4"
       />
     </div>
   );

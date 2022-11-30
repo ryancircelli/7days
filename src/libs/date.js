@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 
-export const convertDate = (date_string) => {
+export const convertDate = (date_string, time_enabled) => {
   let date  = DateTime.fromISO(date_string).startOf('day');
   let today = DateTime.now().startOf('day')
   let date_time = DateTime.fromISO(date_string);
@@ -22,7 +22,7 @@ export const convertDate = (date_string) => {
   return {
     date: day,
     clumped_date: daysDiff > 6 ? "Future" : daysDiff < 0 ? "Overdue" : day,
-    time:  time.slice(-6, -3) === ":00" ? time.slice(0, -6) + time.slice(-2).toLowerCase() : time.slice(0, -3) + time.slice(-2).toLowerCase(),
+    time: !time_enabled ? (time.slice(-6, -3) === ":00" ? time.slice(0, -6) + time.slice(-2).toLowerCase() : time.slice(0, -3) + time.slice(-2).toLowerCase()) : null,
     status: daysDiff === 0 ? "today" : daysDiff > 0 ? "future" : "past"
   };
 }

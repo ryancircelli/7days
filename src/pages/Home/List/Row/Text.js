@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getTextWidth } from 'get-text-width';
 import { updateEvent } from 'gapi/events';
 
@@ -49,20 +49,28 @@ export const Text = ({data, getEvents}) => {
     };
   }, []);
 
-  useEffect(() => {
-    let right = container.current && container.current.offsetWidth - width - 32;
-    right = right > 0 ? right : 0;
-    setRight(right)
-  }, [width, container]);
+  useLayoutEffect(() => {
+    function updateRight() {
+      let right = container.current && container.current.offsetWidth - width - 32;
+      right = right > 0 ? right : 0;
+      setRight(right)
+    }
+    window.addEventListener('resize', updateRight);
+    updateRight();
+    return () => window.removeEventListener('resize', updateRight);
+  }, [width]);
 
   return (
     <div ref={container} className="group w-full h-full relative overflow-hidden">
       <input 
         ref={ref}
         disabled={!selected}
-        className="p-0 h-full absolute left-0 peer border-0 bg-blue-700 placeholder:text-black focus:ring-0"
+        className="p-0 h-full absolute left-0 peer placeholder:text-black focus:ring-0"
         style={{ 
           width: selected ? '100%' : width +'px',
+          borderColor: "black",
+          borderWidth: selected ? '1px' : '0px',
+          borderRadius: 4
         }}
         type="text" 
         value={value}

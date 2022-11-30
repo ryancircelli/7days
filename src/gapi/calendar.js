@@ -60,6 +60,7 @@ export const listEvents = async (calendarID) => {
     let response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/' + encodeURIComponent(calendarID) + '/events', {
       params: {
         maxResults: 2500,
+        singleEvents: true,
         pageToken: pageToken
         // timeMin: "2022-08-01T02:25:08+00:00",
         // timeMax: "2022-09-01T02:25:08+00:00"
@@ -68,13 +69,17 @@ export const listEvents = async (calendarID) => {
     events.push(...response.data.items)
     pageToken = response.data.nextPageToken ? response.data.nextPageToken : null;
   }
-  let items = events.map(({end, ...rest}) => {
-    let date = DateTime.fromISO(end.date ? end.date : end.dateTime);
+  let items = events.map(({...rest}) => {
+    let start_date_or_time = rest.start.date ? true : false;
+    let start_date = DateTime.fromISO(start_date_or_time ? rest.start.date : rest.start.dateTime);
+    let end_date_or_time = rest.end.date ? true : false;
+    let end_date = DateTime.fromISO(end_date_or_time ? rest.end.date : rest.end.dateTime);
     return {
       ...rest,
-      end: end,
-      convertedEnd: date,
-      formatedEnd: convertDate(date)
+      convertedStart: start_date,
+      formatedStart: convertDate(start_date, start_date_or_time),
+      convertedEnd: end_date,
+      formatedEnd: convertDate(end_date, end_date_or_time)
     }
   })
   items = items.sort((a, b) => a.convertedEnd.toMillis() - b.convertedEnd.toMillis());

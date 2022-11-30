@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Header = ({data, extraProps}) => {
   return (  
-    <div className="flex flex-row px-4 bg-red-600">
+    <div className="flex flex-row">
       <div
         className="py-4 text-xl font-bold"
         style={{
@@ -14,13 +14,13 @@ export const Header = ({data, extraProps}) => {
       <div className="w-8"/>
       {extraProps.map((prop) =>
         <div
-          className="py-4 text-xl font-bold flex-1"
+          className="py-4 text-xl font-bold flex-1 text-center"
           key={prop.name}
         >
           {prop.name}
         </div>
       )}
-      <div className="py-4 text-xl font-bold flex-1">
+      <div className="py-4 text-xl font-bold flex-1 text-center">
         Due Date
       </div>
     </div>

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 export const Dropdown = ({data, prop, getEvents}) => {
   const [show, setShow] = useState(false)
   const ref = useRef(null);
-  let dropdown = data.extendedProperties?.private[prop.name.toLowerCase()];
+  let dropdown = JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.[prop.name.toLowerCase()];
   if (dropdown && (typeof dropdown === 'string'))
    dropdown = JSON.parse(dropdown)
 
@@ -29,11 +29,11 @@ export const Dropdown = ({data, prop, getEvents}) => {
           background: dropdown?.color
         }}
       >
-        {dropdown?.name}
+        {dropdown?.name ? dropdown?.name : "-"}
       </button>
       {show ? 
         <div className="h-0 overflow-visible peer">
-          <div className="pb-0.5 relative z-10 bg-white rounded-b divide-y divide-gray-100 shadow dark:bg-gray-700">
+          <div className="pb-0.5 relative z-50 bg-white rounded-b divide-y divide-gray-100 shadow dark:bg-gray-700">
             <ul className="text-gray-700 dark:text-gray-200 flex flex-col">
               {prop.options.map((option) => 
                 <button
@@ -43,10 +43,13 @@ export const Dropdown = ({data, prop, getEvents}) => {
                     background: option.color
                   }}
                   onClick={async () => {
-                    let newDropdown = {...data.extendedProperties?.private}
-                    newDropdown[prop.name.toLowerCase()] = JSON.stringify(option);
+                    let privateProps = {...data.extendedProperties?.private}
+                    privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({
+                      ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"]),
+                      [prop.name.toLowerCase()]: option
+                    })
                     setShow(false);
-                    await updateEventPrivate(data, newDropdown);
+                    await updateEventPrivate(data, privateProps);
                     getEvents();
                   }}
                 >
