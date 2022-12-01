@@ -6,7 +6,7 @@ import { Header } from './Header/Header';
 import { Row } from './Row/Row';
 import { convertDate } from 'libs/date';
 
-import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
+import { ViewportList } from 'react-viewport-list';
 
 export const EventList = ({events, settings, getEvents, className}) => {
 
@@ -23,38 +23,8 @@ export const EventList = ({events, settings, getEvents, className}) => {
     setFilterCompleted(!filterCompleted);
   }
 
-  const parentRef = useRef(null)
-
-  const activeStickyIndexRef = useRef(0)
-
-  const stickyIndexes = useMemo(
-    () => events_headered.filter((event) => event.header).map((event) => event.lastHeaderIndex).slice(1),
-    [],
-  )
-
-  const virtualizer = useVirtualizer({
-    estimateSize: () => 48,
-    count: events_headered.length,
-    overscan: 5,
-    debug: true,
-    getScrollElement: () => parentRef.current,
-    rangeExtractor: useCallback(
-      (range) => {
-        
-        activeStickyIndexRef.current = [...stickyIndexes]
-          .reverse()
-          .find((index) => range.startIndex >= index)
-
-        const next = new Set([
-          activeStickyIndexRef.current,
-          ...defaultRangeExtractor(range),
-        ])
-
-        return [...next].sort((a, b) => a - b)
-      },
-      [stickyIndexes],
-    ),
-  })
+  const ref = useRef(null);
+  const listRef = useRef(null);
 
   return (
     <div className={'w-full flex flex-1 flex-col overflow-y-hidden ' + className}>
@@ -62,53 +32,32 @@ export const EventList = ({events, settings, getEvents, className}) => {
         <Controls toggleFilterCompleted={toggleFilterCompleted}/>
       </div>
       {/* <Scrollbars className='w-full flex-1'> */}
-        <div className='w-full flex-1 overflow-y-scroll' ref={parentRef}>
-          <div
-            style={{
-              height: virtualizer.getTotalSize(),
-              width: '100%',
-              position: 'relative',
-            }}
+        <div className='w-full flex-1 overflow-y-scroll' ref={ref}>
+          <ViewportList
+            ref={listRef}
+            viewportRef={ref}
+            items={events_headered}
           >
-            {virtualizer.getVirtualItems().map((virtualRow) => (
-              events_headered[virtualRow.index].header ?
-                <div                   
-                  key={virtualRow.key}
-                  data-index={virtualRow.index}
-                  ref={virtualizer.measureElement}
-                  className={virtualRow.index === activeStickyIndexRef.current ? "sticky top-0 left-0 w-full z-40 bg-white" : ""}
-                  style={virtualRow.index !== activeStickyIndexRef.current ? {
-                    position: 'absolute',
-                    transform: `translateY(${virtualRow.start}px)`,
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    background: "white"
-                  } : {}}
+            {(item) => (
+              item.header ? 
+                <div 
+                  key={item.id} 
+                  className="sticky top-0 left-0 w-full z-40 bg-white"
                 >
-                  <Header data={events_headered[virtualRow.index].header} extraProps={extraProps}/>
+                  <Header data={item.header} extraProps={extraProps}/>
                 </div>
               :
-                <div                   
-                  key={virtualRow.key}
-                  data-index={virtualRow.index}
-                  ref={virtualizer.measureElement}
-                  style={{
-                    position: 'absolute',
-                    transform: `translateY(${virtualRow.start}px)`,
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                  }}
+                <div 
+                  key={item.id} 
                 >
                   <Row
-                    data={events_headered[virtualRow.index]} 
+                    data={item} 
                     extraProps={extraProps} 
                     getEvents={getEvents}
                   />
-                </div>
-            ))}
-          </div>
+               </div>
+            )}
+          </ViewportList>
         </div>
       {/* </Scrollbars> */}
       {/* <div className="sticky top-0 z-50">
