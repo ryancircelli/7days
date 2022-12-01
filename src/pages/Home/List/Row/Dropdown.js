@@ -45,7 +45,7 @@ export const Dropdown = ({data, prop, getEvents}) => {
                   onClick={async () => {
                     let privateProps = {...data.extendedProperties?.private}
                     privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({
-                      ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"]),
+                      ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"] || "{}"),
                       [prop.name.toLowerCase()]: option
                     })
                     setShow(false);

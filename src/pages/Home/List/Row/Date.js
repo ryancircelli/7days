@@ -4,10 +4,17 @@ import { DateTime } from 'luxon';
 import React, { useState, useRef } from 'react';
 
 export const Date = ({data, getEvents}) => {
+
+
   const ref = useRef(null);
   const [convertedDate, setConvertedDate] = useState(data.formatedEnd)
 
   const [timer, setTimer] = useState(null);
+
+  if (data.formatedEnd === undefined) {
+    console.log(data)
+    return <div className="w-full h-full bg-red-600"/>
+  }
 
   function setDateDelayed(date) {
     setConvertedDate(convertDate(date, convertedDate.time === null));

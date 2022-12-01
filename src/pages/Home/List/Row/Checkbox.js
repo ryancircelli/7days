@@ -11,7 +11,7 @@ export const Checkbox = ({data, getEvents}) => {
       onChange={async () => {
         let privateProps = {...data.extendedProperties?.private}
         privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({
-          ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"]),
+          ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"] || "{}"),
           'completed': !check
         })
         setCheck(!check);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { Controls } from './Controls/Controls';
@@ -6,12 +6,9 @@ import { Header } from './Header/Header';
 import { Row } from './Row/Row';
 import { convertDate } from 'libs/date';
 
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { Group } from './Group/Group';
+import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
 
 export const EventList = ({events, settings, getEvents, className}) => {
-
-  console.log(events)
 
   const [filterCompleted, setFilterCompleted] = useState(true);
 
@@ -19,22 +16,44 @@ export const EventList = ({events, settings, getEvents, className}) => {
   let filtered_events = events.filter((event) => 
     !(filterCompleted && JSON.parse(event.extendedProperties?.private[event.recurringEventId ? event.recurringEventId : "single"] || "{}")?.completed === 'true')
   );
-  let events_grouped = groupBy(filtered_events, event => convertDate(event.convertedEnd).clumped_date)
 
   let events_headered = addHeader(filtered_events, event => convertDate(event.convertedEnd).clumped_date)
-  console.log(events_headered)
 
   const toggleFilterCompleted = () => {
     setFilterCompleted(!filterCompleted);
   }
 
   const parentRef = useRef(null)
+
   const activeStickyIndexRef = useRef(0)
 
+  const stickyIndexes = useMemo(
+    () => events_headered.filter((event) => event.header).map((event) => event.lastHeaderIndex).slice(1),
+    [],
+  )
+
   const virtualizer = useVirtualizer({
-    count: events_grouped.length,
+    estimateSize: () => 48,
+    count: events_headered.length,
+    overscan: 5,
+    debug: true,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 45,
+    rangeExtractor: useCallback(
+      (range) => {
+        
+        activeStickyIndexRef.current = [...stickyIndexes]
+          .reverse()
+          .find((index) => range.startIndex >= index)
+
+        const next = new Set([
+          activeStickyIndexRef.current,
+          ...defaultRangeExtractor(range),
+        ])
+
+        return [...next].sort((a, b) => a - b)
+      },
+      [stickyIndexes],
+    ),
   })
 
   return (
@@ -42,8 +61,8 @@ export const EventList = ({events, settings, getEvents, className}) => {
       <div className="sticky top-0 z-50">
         <Controls toggleFilterCompleted={toggleFilterCompleted}/>
       </div>
-      <div className='w-full flex-1' ref={parentRef}>
-        <Scrollbars className='w-full flex-1'>
+      {/* <Scrollbars className='w-full flex-1'> */}
+        <div className='w-full flex-1 overflow-y-scroll' ref={parentRef}>
           <div
             style={{
               height: virtualizer.getTotalSize(),
@@ -52,31 +71,46 @@ export const EventList = ({events, settings, getEvents, className}) => {
             }}
           >
             {virtualizer.getVirtualItems().map((virtualRow) => (
-              <div
-                key={virtualRow.key}
-                data-index={virtualRow.index}
-                ref={virtualizer.measureElement}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <div className="sticky top-0 z-40">
-                  <Header data={events_grouped[virtualRow.index][0]} extraProps={extraProps}/>
+              events_headered[virtualRow.index].header ?
+                <div                   
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  className={virtualRow.index === activeStickyIndexRef.current ? "sticky top-0 left-0 w-full z-40 bg-white" : ""}
+                  style={virtualRow.index !== activeStickyIndexRef.current ? {
+                    position: 'absolute',
+                    transform: `translateY(${virtualRow.start}px)`,
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    background: "white"
+                  } : {}}
+                >
+                  <Header data={events_headered[virtualRow.index].header} extraProps={extraProps}/>
                 </div>
-                <Group
-                  getEvents={getEvents}
-                  extraProps={extraProps}
-                  data={events_grouped[virtualRow.index][1]} 
-                />
-            </div>
+              :
+                <div                   
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: 'absolute',
+                    transform: `translateY(${virtualRow.start}px)`,
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                  }}
+                >
+                  <Row
+                    data={events_headered[virtualRow.index]} 
+                    extraProps={extraProps} 
+                    getEvents={getEvents}
+                  />
+                </div>
             ))}
           </div>
-        </Scrollbars>
-      </div>
+        </div>
+      {/* </Scrollbars> */}
       {/* <div className="sticky top-0 z-50">
         <Controls toggleFilterCompleted={toggleFilterCompleted}/>
       </div>
@@ -105,19 +139,6 @@ export const EventList = ({events, settings, getEvents, className}) => {
   );
 }
 
-function groupBy(list, keyGetter) {
-  let output = [];
-  list.forEach((item) => {
-    let key = keyGetter(item);
-    if (output.length > 0 && output[output.length-1][0] === key) {
-      output[output.length-1][1].push(item)
-    } else {
-      output.push([key, [item]])
-    }
-  });
-  return output;
-}
-
 function addHeader(list, keyGetter) {
   let output = [];
   let lastHeaderIndex = 0;
@@ -127,7 +148,8 @@ function addHeader(list, keyGetter) {
       output.push(item)
     } else {
       output.push({
-        header: key
+        header: key,
+        lastHeaderIndex: lastHeaderIndex
       })
       lastHeaderIndex = output.length - 1
       output.push(item)

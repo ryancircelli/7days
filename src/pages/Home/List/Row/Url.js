@@ -42,7 +42,7 @@ export const Url = ({data, prop, getEvents}) => {
       setWidth(getTextWidth(parsedURL?.resource))
       let privateProps = {...data.extendedProperties?.private}
       privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({
-        ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"]),
+        ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"] || "{}"),
         [prop.name.toLowerCase()]: parsedURL.href
       })
       await updateEventPrivate(data, privateProps);
