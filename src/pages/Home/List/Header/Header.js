@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Header = ({data, extraProps}) => {
   return (  
-    <div className="flex flex-row">
+    <div className="flex flex-row bg-white">
       <div
         className="py-4 text-xl font-bold"
         style={{
