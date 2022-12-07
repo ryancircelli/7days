@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { Controls } from './Controls/Controls';
@@ -7,20 +7,29 @@ import { Row } from './Row/Row';
 import { convertDate } from 'libs/date';
 
 import { ViewportList } from 'react-viewport-list';
+import { DateTime } from 'luxon';
 
 export const EventList = ({events, settings, getEvents, className}) => {
 
   const [filterCompleted, setFilterCompleted] = useState(true);
+  const [filterFuture30, setFilterFuture30] = useState(true);
+  const [scrollable, setScrollable] = useState(true);
 
   const extraProps = settings.extraProperties;
   let filtered_events = events.filter((event) => 
     !(filterCompleted && JSON.parse(event.extendedProperties?.private[event.recurringEventId ? event.recurringEventId : "single"] || "{}")?.completed === true)
+    &&
+    !(filterFuture30 && event.convertedStart > DateTime.now().plus({ days: 30 }))
   );
 
-  let events_grouped = groupBy(filtered_events, event => convertDate(event.convertedEnd).clumped_date)
+  let events_grouped = groupBy(filtered_events, event => convertDate(event.convertedStart).clumped_date)
 
   const toggleFilterCompleted = () => {
     setFilterCompleted(!filterCompleted);
+  }
+
+  const toggleFilterFuture30 = () => {
+    setFilterFuture30(!filterFuture30);
   }
 
   const ref = useRef(null);
@@ -29,7 +38,7 @@ export const EventList = ({events, settings, getEvents, className}) => {
   return (
     <div className={'w-full flex flex-1 flex-col overflow-y-hidden ' + className}>
       <div className="sticky top-0 z-50">
-        <Controls toggleFilterCompleted={toggleFilterCompleted} listRef={listRef} events_grouped={events_grouped}/>
+        <Controls toggleFilterCompleted={toggleFilterCompleted} toggleFilterFuture30={toggleFilterFuture30} listRef={listRef} events_grouped={events_grouped}/>
       </div>
         <div className='w-full flex-1' ref={ref}>
           <Scrollbars
@@ -57,23 +66,24 @@ export const EventList = ({events, settings, getEvents, className}) => {
                 }}
               />
             }
+            renderView={props => <div {...props} className={scrollable ? "" : "!overflow-hidden !mr-0"}/>}
           >
             {events_grouped.map(([key, value], index) => {
               return (
                 <div key={key} ref={el => listRef.current[index] = el}>
-                  <div className="sticky top-0 z-40">
-                    <Header data={key} extraProps={extraProps}/>
-                  </div>
+                  <Header data={key} extraProps={extraProps} viewportRef={ref}/>
                   <ViewportList
                     viewportRef={ref}
                     items={value}
                   >
                     {(item) => (
                       <Row
-                        key={item.id} 
+                        key={item.id + item.convertedStart} 
                         data={item} 
                         extraProps={extraProps} 
                         getEvents={getEvents}
+                        viewportRef={ref}
+                        setScrollable={setScrollable}
                       />
                     )}
                   </ViewportList>

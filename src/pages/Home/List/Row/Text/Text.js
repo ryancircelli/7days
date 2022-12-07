@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getTextWidth } from 'get-text-width';
 import { updateEvent } from 'gapi/events';
+import { FiEdit } from "react-icons/fi";
 
 export const Text = ({data, getEvents}) => {
   let placeholder = "(No title)";
@@ -27,8 +28,12 @@ export const Text = ({data, getEvents}) => {
   }
 
   const escapeHandler = evt => {
-    if (evt.code === "Escape" || evt.code === "Enter") {
+    if (evt.code === "Enter") {
       exitInput();
+    }
+    if (evt.code === "Escape") {
+      setSelected(false);
+      setValue(data.summary)
     }
   };
 
@@ -61,16 +66,20 @@ export const Text = ({data, getEvents}) => {
   }, [width]);
 
   return (
-    <div ref={container} className="group w-full h-full relative overflow-hidden">
+    <div 
+      ref={container} 
+      className="group w-full h-full relative overflow-hidden"
+      style={{ 
+        borderColor: "black",
+        borderWidth: selected ? '1px' : '0px',
+      }}
+    >
       <input 
         ref={ref}
         disabled={!selected}
-        className="p-0 h-full absolute left-0 peer placeholder:text-black focus:ring-0"
+        className="p-0 h-full absolute -z-10 left-0 peer placeholder:text-black focus:ring-0 border-0"
         style={{ 
           width: selected ? '100%' : width +'px',
-          borderColor: "black",
-          borderWidth: selected ? '1px' : '0px',
-          borderRadius: 4
         }}
         type="text" 
         value={value}
@@ -87,7 +96,7 @@ export const Text = ({data, getEvents}) => {
           setSelected(true)
         }}
       >
-        [*]
+        <FiEdit className="m-2 align-bottom"/>
       </button>
     </div>
   );

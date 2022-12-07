@@ -10,12 +10,7 @@ export const createEvent = async (calendarID) => {
     end: {
       dateTime: DateTime.now().toString()
     },
-    extendedProperties: {
-      private: {
-        class: "CDA3101"
-      }
-    },
-    summary: "Lecture Test"
+    summary: ""
   });
   console.log("Event", calendar, "Created")
   return calendar;
@@ -29,11 +24,12 @@ export const updateEvent = async (newItem) => {
 
 export const updateEventPrivate = async (originalItem, privateProperties) => {
   let calendar = await axios.put('https://www.googleapis.com/calendar/v3/calendars/' + encodeURIComponent(originalItem.organizer.email) + '/events/' + encodeURIComponent(originalItem.id), {
-    start: originalItem.start,
-    end: originalItem.end,
+    start: originalItem.recurrence ? originalItem.originalStart : originalItem.start,
+    end: originalItem.recurrence ? originalItem.originalEnd : originalItem.end,
     extendedProperties: {
       private: privateProperties
     },
+    recurrence: originalItem.recurrence,
     summary: originalItem.summary
   });
   console.log(calendar)

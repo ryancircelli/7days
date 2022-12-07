@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import axios from "axios";
 import { DateTime } from 'luxon';
 import { convertDate } from 'libs/date';
+import { RRule } from 'rrule';
+import dayjs from 'dayjs';
 
 export const listCalendars = async () => {
   let calendars = await axios.get('https://www.googleapis.com/calendar/v3/users/me/calendarList');
@@ -60,16 +62,17 @@ export const listEvents = async (calendarID) => {
     let response = await axios.get('https://www.googleapis.com/calendar/v3/calendars/' + encodeURIComponent(calendarID) + '/events', {
       params: {
         maxResults: 2500,
-        singleEvents: true,
+        singleEvents: false,
         pageToken: pageToken
-        // timeMin: "2022-08-01T02:25:08+00:00",
-        // timeMax: "2022-09-01T02:25:08+00:00"
       }
     })
     events.push(...response.data.items)
     pageToken = response.data.nextPageToken ? response.data.nextPageToken : null;
   }
-  let items = events.map(({...rest}) => {
+
+  let recurring_events = events.flatMap((event) => convertToRecurring(event));
+  events.flatMap((event) => [event, ...convertToRecurring(event)]);
+  let items = recurring_events.map(({...rest}) => {
     let start_date_or_time = rest.start.date ? true : false;
     let start_date = DateTime.fromISO(start_date_or_time ? rest.start.date : rest.start.dateTime);
     let end_date_or_time = rest.end.date ? true : false;
@@ -79,10 +82,14 @@ export const listEvents = async (calendarID) => {
       convertedStart: start_date,
       formatedStart: convertDate(start_date, start_date_or_time),
       convertedEnd: end_date,
-      formatedEnd: convertDate(end_date, end_date_or_time)
+      formatedEnd: convertDate(end_date, end_date_or_time),
+      type: (start_date.toMillis()  === end_date.plus({ days: -1 }).toMillis()  && start_date.startOf('day').toMillis()  === start_date.toMillis()) ? 'day_event' : 
+            (start_date.toMillis()  === end_date.toMillis()) ? 'task' : 
+            (start_date.startOf('day').toMillis()  === end_date.startOf('day').toMillis()) ? 'single_day_event' : 
+            'multi_day_event'
     }
   })
-  items = items.sort((a, b) => a.convertedEnd.toMillis() - b.convertedEnd.toMillis());
+  items = items.sort((a, b) => a.convertedStart.toMillis() - b.convertedStart.toMillis());
   return items;
 }
 
@@ -96,4 +103,31 @@ export const useListEvents = (calendarID) => {
       getEvents()
   }, [calendarID])
   return events;
+}
+
+const convertToRecurring = (event) => {
+  if (event.recurrence === undefined) return [event];
+  let output = [];
+
+  const eventStart = new Date(event.start.date ? event.start.date : event.start.dateTime);
+  const eventEnd = new Date(event.end.date ? event.end.date : event.end.dateTime);
+  const eventLength = eventEnd.valueOf() - eventStart.valueOf();
+  const ruleOptions = RRule.parseString(event.recurrence[0]);
+  ruleOptions.dtstart = eventStart;
+  const rule = new RRule(ruleOptions);
+
+  let dates = rule.between(eventStart, DateTime.now().plus({years: 10}).toJSDate(), true)
+  for (let [index, date] of dates.entries()) {
+    let occuranceEnd = new Date(date.valueOf() + eventLength.valueOf());
+  	output.push({
+      ...event,
+      originalStart: event.start.date ? { date: eventStart.toISOString() } : { dateTime: eventStart.toISOString(), timeZone: event.start.timeZone  },
+      originalEnd: event.end.date ? { date: eventEnd.toISOString() } : { dateTime: eventEnd.toISOString(), timeZone: event.end.timeZone  },
+      start: event.start.date ? { date: date.toISOString() } : { dateTime: date.toISOString(), timeZone: event.start.timeZone  },
+      end: event.end.date ? { date: occuranceEnd.toISOString() } : { dateTime: occuranceEnd.toISOString(), timeZone: event.end.timeZone  },
+      rrule: ruleOptions,
+      recurringEventId: (event.id + index)
+    })
+  }
+  return output;
 }

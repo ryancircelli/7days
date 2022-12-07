@@ -1,10 +1,13 @@
 import { updateEventPrivate } from 'gapi/events';
 import React, { useState, useEffect, useRef } from 'react';
 
-export const Dropdown = ({data, prop, getEvents}) => {
+export const Dropdown = ({data, prop, getEvents, changeDefault}) => {
   const [show, setShow] = useState(false)
   const ref = useRef(null);
-  let dropdown = JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.[prop.name.toLowerCase()];
+
+  let key = data.recurringEventId && !changeDefault && (JSON.parse(data.extendedProperties?.private[data.recurringEventId] || "{}")[prop.name.toLowerCase()] !== undefined) ? data.recurringEventId : 'default'
+  let dropdown = JSON.parse(data.extendedProperties?.private[key] || "{}")?.[prop.name.toLowerCase()];
+  
   if (dropdown && (typeof dropdown === 'string'))
    dropdown = JSON.parse(dropdown)
 
@@ -24,7 +27,7 @@ export const Dropdown = ({data, prop, getEvents}) => {
     <div ref={ref} className="w-full h-full">
       <button 
         onClick={()=> setShow(!show)} 
-        className="hover:border-2 peer-hover:border-2 border-white w-full h-full flex-1 flex justify-center items-center" 
+        className="hover:border-[1px] peer-hover:border-[1px] border-black w-full h-full flex-1 flex justify-center items-center" 
         style={{
           background: dropdown?.color
         }}
@@ -38,14 +41,15 @@ export const Dropdown = ({data, prop, getEvents}) => {
               {prop.options.map((option) => 
                 <button
                   key={option.name}
-                  className="py-3 px-4 mx-0.5 mt-0.5 rounded hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="py-3 px-4 mx-0.5 mt-0.5 rounded hover:brightness-95"
                   style={{
                     background: option.color
                   }}
                   onClick={async () => {
                     let privateProps = {...data.extendedProperties?.private}
-                    privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({
-                      ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"] || "{}"),
+                    let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+                    privateProps[key] = JSON.stringify({
+                      ...JSON.parse(privateProps[key] || "{}"),
                       [prop.name.toLowerCase()]: option
                     })
                     setShow(false);
@@ -56,6 +60,21 @@ export const Dropdown = ({data, prop, getEvents}) => {
                   {option.name}
                 </button>
               )}
+                <button
+                  className="py-3 px-4 mx-0.5 mt-0.5 rounded bg-white hover:brightness-95"
+                  onClick={async () => {
+                    let privateProps = {...data.extendedProperties?.private}
+                    let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+                    let privatePropsKey = JSON.parse(privateProps[key] || "{}")
+                    delete privatePropsKey[prop.name.toLowerCase()]
+                    privateProps[key] = JSON.stringify(privatePropsKey)
+                    setShow(false);
+                    await updateEventPrivate(data, privateProps);
+                    getEvents();
+                  }}
+                >
+                  -
+                </button>
             </ul>
           </div>
         </div>

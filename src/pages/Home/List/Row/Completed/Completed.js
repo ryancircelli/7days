@@ -1,13 +1,12 @@
 import { updateEventPrivate } from 'gapi/events';
 import React, { useState } from 'react';
+import { Checkbox } from 'antd';
 
-export const Checkbox = ({data, getEvents}) => {
+export const Completed = ({data, getEvents}) => {
   const [check, setCheck] = useState(JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.completed === true)
   return (  
-    <input 
-      type="checkbox" 
+    <Checkbox  
       checked={check}
-      className="h-4 w-4 focus:ring-blue-600 ring-offset-gray-700 focus:ring-2 bg-gray-600 border-gray-500"
       onChange={async () => {
         let privateProps = {...data.extendedProperties?.private}
         privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({

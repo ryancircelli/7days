@@ -2,30 +2,47 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getTextWidth } from 'get-text-width';
 import parseUrl from "parse-url";
 import { updateEventPrivate } from 'gapi/events';
+import { FiEdit } from "react-icons/fi";
 
-export const Url = ({data, prop, getEvents}) => {
-  let placeholder = JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.[prop.name.toLowerCase()];
+export const Url = ({data, prop, getEvents, changeDefault}) => {
+  // add changeDefault logic
+
+  const eventValue = JSON.parse(data.extendedProperties?.private['default'] || "{}")[prop.name.toLowerCase()];
+  const [parsedEventValue, setParsedEventValue] = useState();
+
+  const originalValue = data.recurringEventId && !changeDefault ? JSON.parse(data.extendedProperties?.private[data.recurringEventId] || "{}")[prop.name.toLowerCase()] : eventValue;
+  const [value, setValue] = useState(originalValue);
+  const [parsedURL, setParsedURL] = useState(null);
+  const [valid, setValid] = useState(false);
+
   const ref = useRef(null);
   const container = useRef(null);
   const [selected, setSelected] = useState(false);
-  const [valid, setValid] = useState(false);
-  const [parsedURL, setParsedURL] = useState(null);
+
   const [width, setWidth] = useState(0);
   const [right, setRight] = useState(0);
   const [alignCenter, setAlignCenter] = useState(true);
 
-  const loadPlaceholder = () => {
+  const loadEventValue = () => {
     try {
-      let url = parseUrl(placeholder);
-      setValid(true);
-      setParsedURL(url);
-      setWidth(getTextWidth(url?.resource));
+      let url = parseUrl(eventValue)
+      setValid(true)
+      // @ts-ignore
+      setParsedEventValue(url);
+      setWidth(getTextWidth(url?.resource))
     } catch {
       setValid(false);
     }
   }
 
   const changeHandler = evt => {
+    setValue(evt.target.value)
+    if (evt.target.value === '') {
+      setValid(true);
+      setParsedURL(null);
+      setWidth(getTextWidth(''));
+      return
+    }
     try {
       let url = parseUrl(evt.target.value);
       setValid(true);
@@ -38,21 +55,37 @@ export const Url = ({data, prop, getEvents}) => {
 
   const exitInput = async () => {
     setSelected(false);
-    if (parsedURL && parsedURL.href !== null && placeholder !== parsedURL.href) {
+    if (value === '' && originalValue !== '') {
+      setWidth(getTextWidth(parsedEventValue?.resource))
+      let privateProps = {...data.extendedProperties?.private}
+      let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+      let privatePropsKey = JSON.parse(privateProps[key] || "{}")
+      delete privatePropsKey[prop.name.toLowerCase()]
+      privateProps[key] = JSON.stringify(privatePropsKey)
+      await updateEventPrivate(data, privateProps);
+      getEvents();
+    }
+    if (parsedURL && parsedURL.href !== null && originalValue !== parsedURL.href && eventValue !== parsedURL.href) {
       setWidth(getTextWidth(parsedURL?.resource))
       let privateProps = {...data.extendedProperties?.private}
-      privateProps[data.recurringEventId ? data.recurringEventId : "single"] = JSON.stringify({
-        ...JSON.parse(privateProps[data.recurringEventId ? data.recurringEventId : "single"] || "{}"),
-        [prop.name.toLowerCase()]: parsedURL.href
-      })
+      let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+      let privatePropsKey = JSON.parse(privateProps[key] || "{}")
+      privatePropsKey[prop.name.toLowerCase()] = parsedURL.href
+      privateProps[key] = JSON.stringify(privatePropsKey)
       await updateEventPrivate(data, privateProps);
       getEvents();
     }
   }
 
   const escapeHandler = evt => {
-    if (evt.code === "Escape" || evt.code === "Enter")
+    if (evt.code === "Enter") {
       exitInput();
+    }
+    if (evt.code === "Escape") {
+      setSelected(false);
+      setValue(parsedURL?.href)
+      setWidth(getTextWidth(parsedURL?.resource))
+    }
   };
 
   useEffect(() => {
@@ -61,7 +94,7 @@ export const Url = ({data, prop, getEvents}) => {
   }, [selected]);
 
   useEffect(() => {
-    loadPlaceholder();
+    loadEventValue();
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target))
         exitInput();
@@ -87,16 +120,15 @@ export const Url = ({data, prop, getEvents}) => {
   return (
     <div 
       ref={container} 
-      className="group h-full w-full relative overflow-hidden flex justify-center items-center"
-      style={{
-        borderWidth: !selected ? 0 : "1px",
-        borderColor: valid ? "black" : "red",
-        borderRadius: 4
-      }}
+      className={
+        "group h-full w-full relative overflow-hidden flex justify-center items-center " + 
+        (!selected ? ' hover:border border-black' : 
+          (' border ' + (valid ? ' border-black ' : ' border-red-600 ')))
+      }
     >
       { !selected ?
         <a
-          href={parsedURL?.href}
+          href={parsedURL?.href ? parsedURL?.href : parsedEventValue?.resource}
           target="_blank" 
           rel="noopener noreferrer"
           className="h-full flex justify-center items-center"
@@ -107,7 +139,7 @@ export const Url = ({data, prop, getEvents}) => {
               justifyContent: alignCenter ? "center" : "left"
             }}
           >
-            {parsedURL?.resource ? parsedURL?.resource : "-"}
+            {parsedURL?.resource ? parsedURL?.resource : (parsedEventValue?.resource ? parsedEventValue?.resource : "-")}
           </div>
         </a>
       :
@@ -118,7 +150,8 @@ export const Url = ({data, prop, getEvents}) => {
           type="text" 
           onChange={changeHandler}
           onKeyDown={escapeHandler}
-          placeholder={placeholder}
+          value={value}
+          placeholder={'https://'}
         />
       }
       <button 
@@ -130,7 +163,7 @@ export const Url = ({data, prop, getEvents}) => {
           setSelected(true)
         }}
       >
-        [*]
+        <FiEdit className="m-2 align-bottom"/>
       </button>
     </div>
   );
