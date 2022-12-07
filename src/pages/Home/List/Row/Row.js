@@ -10,7 +10,7 @@ export const Row = ({data, extraProps, getEvents, viewportRef, setScrollable}) =
   useEffect(()=>{},[data])
   return (
     <div className="grid group/row">
-      <div className='z-1 group-hover/row:border pointer-events-none' style={{gridArea: '1/1'}}/>
+      <div className='z-1 group-hover/row:border pointer-events-none mr-4' style={{gridArea: '1/1'}}/>
       <div className="flex flex-row h-12 mr-4" style={{gridArea: '1/1'}}>
         <div className="flex w-10 justify-center items-center">
           <Completed

@@ -80,11 +80,11 @@ export const DateEditor = ({data, showEditor, getEvents}) => {
     setRecurringOriginal(output);
   }, []);
 
-  const [startDate, setStartDate] = useState(dayjs(data.originalStart ? data.originalStart.valueOf() : data.convertedStart.toMillis()));
+  const [startDate, setStartDate] = useState(dayjs(data.originalStart ? (data.originalStart.date ? data.originalStart.date : data.originalStart.dateTime).valueOf() : data.convertedStart.toMillis()));
   const [endDate, setEndDate] = useState(timeEnabled ? 
-      dayjs(data.originalEnd ? data.originalEnd.valueOf() : data.convertedEnd.valueOf())
+      dayjs(data.originalEnd ? (data.originalEnd.date ? data.originalEnd.date : data.originalEnd.dateTime).valueOf() : data.convertedEnd.valueOf())
       : 
-      dayjs(data.originalEnd ? data.originalEnd.valueOf() : data.convertedEnd.valueOf()).add(-1, 'day')
+      dayjs(data.originalEnd ? (data.originalEnd.date ? data.originalEnd.date : data.originalEnd.dateTime).valueOf() : data.convertedEnd.valueOf()).add(-1, 'day')
     );
 
   useEffect(() => {
