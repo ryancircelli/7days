@@ -37,7 +37,7 @@ export const Login = ({setCredential}) => {
           client_id: '820232599217-dpo4vm7it9vctfafu01f29huff8n4afa.apps.googleusercontent.com',
           client_secret: process.env.REACT_APP_CLIENT_SECRET,
           grant_type: 'authorization_code',
-          redirect_uri: 'http://localhost:3000'
+          redirect_uri: process.env.REACT_APP_REDIRECT_URI
       }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
