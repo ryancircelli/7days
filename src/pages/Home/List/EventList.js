@@ -42,7 +42,8 @@ export const EventList = ({events, settings, getEvents, className}) => {
       </div>
         <div className='w-full flex-1' ref={ref}>
           <Scrollbars
-            className='w-full' 
+            className='w-full overflow-hidden'
+            autoHide
             renderThumbVertical={()=>
               <div 
                 style={{	        
@@ -60,13 +61,13 @@ export const EventList = ({events, settings, getEvents, className}) => {
                   width: 6,
                   right: 2,
                   bottom: 2,
-                  top: 2,
+                  top: 60,
                   borderRadius: 3,
                   zIndex: 100,
                 }}
               />
             }
-            renderView={props => <div {...props} className={scrollable ? "" : "!overflow-hidden !mr-0"}/>}
+            renderView={props => <div {...props} className={ "!overflow-x-hidden " + (scrollable ? "" : "!overflow-hidden !mr-0")}/>}
           >
             {events_grouped.map(([key, value], index) => {
               return (

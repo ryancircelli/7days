@@ -9,6 +9,7 @@ import { EventList } from './List/EventList';
 
 import { FiPlus } from "react-icons/fi";
 import { Row } from './List/Row/Row';
+import { HomeMenu } from './HomeMenu/HomeMenu';
 
 export const Home = () => {
 
@@ -62,27 +63,33 @@ export const Home = () => {
   if (events === null || userInfo === null || settings === null)
     return <div/>
 
+
+  // TODO renaming current event overrides recurrence
+
   return (
-    <div className='flex h-screen flex-col'>
-      <Header userInfo={userInfo}/>
-      <EventList
-        events={events} 
-        settings={settings} 
-        getEvents={getEvents}
-        className="px-4"
-      />
-      <button 
-        className='absolute right-8 bottom-8 w-16 h-16 bg-white hover:bg-[rgb(0,0,0,0.06)] rounded-full z-[1000] flex items-center justify-center'
-        style={{
-          boxShadow: '0 0 32px rgb(0,0,0,0.16)'
-        }}
-        onClick={async ()=>{
-          await createEvent(calendar.id)
-          getEvents()
-        }}
-      >
-        <FiPlus className="align-bottom w-8 h-8"/>
-      </button>
+    <div className='flex h-screen flex-col bg-purple-800'>
+      <div className='flex flex-col h-full w-full'>
+          <div
+            className='grid grid-rows-[auto_1fr] h-full gap-4 m-4'
+          >
+            <div className='row-span-1 h-12'>
+              <Header userInfo={userInfo}/>
+            </div>
+            <div className='row-span-1 flex flex-row'>
+              <div className='flex'>
+                <HomeMenu/>
+              </div>
+              <div className='flex-1 p-4 bg-white rounded-3xl overflow-hidden'>
+                <EventList
+                  events={events} 
+                  settings={settings} 
+                  getEvents={getEvents}
+                  className='w-full h-full'
+                />
+              </div>
+            </div>
+          </div>
+      </div>
     </div>
   );
 }

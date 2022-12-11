@@ -1,6 +1,7 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 import Cookies from 'js-cookie'
+import React from 'react';
 import { useEffect } from 'react';
 
 export const Login = ({setCredential}) => {
@@ -13,7 +14,7 @@ export const Login = ({setCredential}) => {
             client_id: '820232599217-dpo4vm7it9vctfafu01f29huff8n4afa.apps.googleusercontent.com',
             client_secret: process.env.REACT_APP_CLIENT_SECRET,
             grant_type: 'refresh_token',
-            redirect_uri: 'http://localhost:3000'
+            redirect_uri: process.env.REACT_APP_REDIRECT_URI
         }, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'

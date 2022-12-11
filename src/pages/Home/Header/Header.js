@@ -2,35 +2,63 @@ import React from 'react';
 import { googleLogout } from '@react-oauth/google';
 import { resetSettings } from 'gapi/settings';
 
+import { Dropdown } from 'antd';
+
 export const Header = ({userInfo}) => {
 
   return (  
-    <div className="flex flex-row h-14 w-full bg-gray-700 relative z-50">
-      <button 
-        className="bg-white rounded-md p-2 m-2"
-        onClick={() => googleLogout()}
-      >
-        Logout
-      </button>
-      <button 
-        className="bg-white rounded-md p-2 m-2"
-        onClick={() => resetSettings()}
-      >
-        Reset Settings
-      </button>
-
+    <div className="flex flex-row h-full w-full relative z-50">
       <div 
-        className="absolute h-full flex flex-row right-4 py-2"
+        className='flex justify-center text-white text-6xl -mt-2' 
+        style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: '100'
+        }}
       >
-        <div className='h-full px-4 flex items-center justify-center text-white text-lg'>
-          {userInfo.data.name}
-        </div>
-        <img 
-          src={userInfo ? userInfo.data.picture : ""}
-          alt="User Profile"
-          className=' rounded-full'
-        />
+        7days
+      </div>
+      <div 
+        className="absolute h-full flex flex-row right-4"
+      >
+        <Dropdown
+          className='h-full'
+          menu={{items}}
+        >
+          <div className="flex flex-row items-end">
+            <div className='text-xl h-full px-4 flex items-end justify-center text-white font-extralight'>
+              {userInfo.data.name}
+            </div>
+            <img 
+              src={userInfo ? userInfo.data.picture : ""}
+              alt="User Profile"
+              className='h-[80%] rounded-full'
+            />
+          </div>
+        </Dropdown>
       </div>
     </div>
   );
 }
+
+const items = [
+  {
+    key: '1',
+    label: (
+      <button 
+        onClick={() => resetSettings()}
+      >
+        Reset Settings
+      </button>
+    ),
+  },
+  {
+    key: '2',
+    label: (
+      <button 
+        onClick={() => googleLogout()}
+      >
+        Logout
+      </button>
+    ),
+  },
+];

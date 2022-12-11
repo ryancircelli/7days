@@ -12,7 +12,7 @@ export const Header = ({data, extraProps, viewportRef}) => {
   // if(ref.current) observer.observe(ref.current);
 
   return (  
-    <div ref={ref} className="sticky -top-[1px] z-40 flex flex-row mr-4 bg-white">
+    <div ref={ref} className="sticky -top-[1px] z-40 flex flex-row ml-4 mr-6 bg-white">
       <div
         className="py-4 text-xl font-bold"
         style={{
@@ -30,7 +30,7 @@ export const Header = ({data, extraProps, viewportRef}) => {
           {prop.name}
         </div>
       )}
-      <div className="py-4 text-xl font-bold flex-[1.5] text-center">
+      <div className="py-4 text-xl font-bold flex-[2] text-center">
         Due Date
       </div>
       <div className="w-16"/> 

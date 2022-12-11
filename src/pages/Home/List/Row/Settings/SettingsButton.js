@@ -27,7 +27,7 @@ export const SettingsButton = ({data, extraProps, getEvents}) => {
 
   return (  
     <>
-      <button onClick={showModal}>
+      <button onClick={showModal} className="">
         <FiMoreHorizontal className="m-2 align-bottom"/>
       </button>
       <Modal 

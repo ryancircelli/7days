@@ -74,19 +74,21 @@ export const Text = ({data, getEvents}) => {
         borderWidth: selected ? '1px' : '0px',
       }}
     >
-      <input 
-        ref={ref}
-        disabled={!selected}
-        className="p-0 h-full absolute -z-10 left-0 peer placeholder:text-black focus:ring-0 border-0"
-        style={{ 
-          width: selected ? '100%' : width +'px',
-        }}
-        type="text" 
-        value={value}
-        onChange={changeHandler}
-        onKeyDown={escapeHandler}
-        placeholder={placeholder}
-      />
+      <div className='h-full absolute flex items-center peer'>
+        <input 
+          ref={ref}
+          disabled={!selected}
+          className="p-0 z-0 left-0 placeholder:text-black focus:ring-0 border-0"
+          style={{ 
+            width: selected ? '100%' : width +'px',
+          }}
+          type="text" 
+          value={value}
+          onChange={changeHandler}
+          onKeyDown={escapeHandler}
+          placeholder={placeholder}
+        />
+      </div>
       <button 
         className='w-8 h-full absolute group-hover:inline peer-focus:hidden hidden justify-center items-center'
         style={{
