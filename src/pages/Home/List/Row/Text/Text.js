@@ -80,6 +80,7 @@ export const Text = ({data, getEvents, disabled}) => {
         <input 
           ref={ref}
           disabled={!selected || disabled}
+          autoComplete="off"
           className="p-0 z-0 left-0 placeholder:text-black focus:ring-0 border-0"
           style={{ 
             width: selected ? '100%' : width +'px',

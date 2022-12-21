@@ -155,6 +155,7 @@ export const PropDropdown = ({data, settings, getSavedSettings, prop, getEvents,
                     background: option.color
                   }}
                   value={option.name}
+                  autoComplete="off"
                   onClick={() => setNewOptions(prop?.options)}
                   onChange={evt => {
                     let newOptions1 = newOptions.map(propOption => 

@@ -146,6 +146,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
         <input 
           ref={ref}
           disabled={!selected}
+          autoComplete="off"
           className="p-0 h-full w-full absolute left-0 peer border-0 placeholder:text-black focus:ring-0"
           type="text" 
           onChange={changeHandler}
