@@ -3,7 +3,7 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { FaGoogle } from 'react-icons/fa';
+import gLogo from '../../assets/g-logo.png';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
@@ -100,12 +100,19 @@ export const Login = ({setCredential}) => {
         </div>
         <button 
           onClick={() => googleLogin()} 
-          className={"col-start-1 row-start-1 text-xl font-medium flex flex-row items-center justify-center bg-white rounded-lg w-48 h-16 transition-opacity duration-150 " + 
+          className={"col-start-1 row-start-1 text-xl font-normal flex flex-row items-center justify-center bg-white rounded-lg w-48 h-16 transition-opacity duration-150 " + 
             (showLogin ? ' opacity-100 ' : ' opacity-0 ')
           }
+          style={{
+            fontFamily: 'Roboto, sans-serif',
+          }}
         >
-          Login With
-          <FaGoogle className='m-1' size={24}/>
+          Sign in with
+          <img 
+            src={gLogo}
+            alt="Google Signin"
+            className='m-2 mr-0 h-8'
+          />
         </button>
       </div>
     </div>

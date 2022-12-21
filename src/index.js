@@ -9,7 +9,7 @@ import WebFont from 'webfontloader';
 
 WebFont.load({
   google: {
-    families: ['Poppins:100,200,300,400']
+    families: ['Poppins:100,200,300,400', 'Roboto']
   }
 });
 
