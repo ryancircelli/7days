@@ -1,33 +1,35 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getTextWidth } from 'get-text-width';
-import { updateEvent } from 'gapi/events';
+import { updateEventName } from 'gapi/events';
 import { FiEdit } from "react-icons/fi";
 
-export const Text = ({data, getEvents}) => {
+export const Text = ({data, getEvents, disabled}) => {
   let placeholder = "(No title)";
   const ref = useRef(null);
   const container = useRef(null);
   const [selected, setSelected] = useState(false);
-  const [width, setWidth] = useState(getTextWidth(data.summary ? data.summary : placeholder));
+  const [width, setWidth] = useState(getTextWidth(data?.summary ? data?.summary : placeholder));
   const [right, setRight] = useState(0);
-  const [value, setValue] = useState(data.summary);
+  const [value, setValue] = useState(data?.summary);
 
   const changeHandler = evt => {
+    if (disabled) return;
     setValue(evt.target.value)
     setWidth(getTextWidth(evt.target.value ? evt.target.value : placeholder))
   };
   
   const exitInput = async () => {
+    if (disabled) return;
     setSelected(false);
     let value = ref.current.value !== "" ? ref.current.value : undefined
     if (value !== data.summary) {
-      data.summary = value;
-      await updateEvent(data)
+      await updateEventName(data, value)
       getEvents();
     }
   }
 
   const escapeHandler = evt => {
+    if (disabled) return;
     if (evt.code === "Enter") {
       exitInput();
     }
@@ -77,7 +79,7 @@ export const Text = ({data, getEvents}) => {
       <div className='h-full absolute flex items-center peer'>
         <input 
           ref={ref}
-          disabled={!selected}
+          disabled={!selected || disabled}
           className="p-0 z-0 left-0 placeholder:text-black focus:ring-0 border-0"
           style={{ 
             width: selected ? '100%' : width +'px',
@@ -90,7 +92,7 @@ export const Text = ({data, getEvents}) => {
         />
       </div>
       <button 
-        className='w-8 h-full absolute group-hover:inline peer-focus:hidden hidden justify-center items-center'
+        className={'w-8 h-full absolute group-hover:inline peer-focus:hidden hidden justify-center items-center' + (disabled ? ' invisible ' : '')}
         style={{
           right: right + 'px'
         }}

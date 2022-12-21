@@ -1,8 +1,12 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 import Cookies from 'js-cookie'
-import React from 'react';
+import React, { useState } from 'react';
 import { useEffect } from 'react';
+import { FaGoogle } from 'react-icons/fa';
+
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 
 export const Login = ({setCredential}) => {
   const getRefresh = async (refresh_token) => {
@@ -25,7 +29,7 @@ export const Login = ({setCredential}) => {
       setCredential(tokens.data.access_token)
       return tokens;
     } catch (error) {
-      googleLogin()
+      console.log('Failed Auth Refresh')
     }
   }
 
@@ -44,13 +48,16 @@ export const Login = ({setCredential}) => {
         }
       });
     console.log(tokens);
-    setCredential(tokens.data.access_token)
+    setTimeout(async () => {
+      setCredential(tokens.data.access_token)
+    }, 250);
     return tokens;
   }
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
+      setShowLogin(false)
       console.log(codeResponse);
       var tokens = await getCredentials(codeResponse.code)
       Cookies.set('refresh_token', tokens.data.refresh_token) 
@@ -58,15 +65,49 @@ export const Login = ({setCredential}) => {
     onError: errorResponse => console.log(errorResponse),
   });
 
+  const [showLogin, setShowLogin] = useState(false)
+
   useEffect(()=> {
-    let refresh_token = (Cookies.get('refresh_token'))
-    if (refresh_token !== undefined)
+    setTimeout(() => {
+      setShowLogin(true)
+    }, 250);
+    let refresh_token = Cookies.get('refresh_token')
+    if (refresh_token !== 'undefined')
       getRefresh(decodeURIComponent(refresh_token))
-  })
+  }, [])
 
   return (
-    <div>
-      <button onClick={() => googleLogin()} style={{height: '100px', width: '100px'}}/>
+    <div className='flex h-screen flex-col items-center justify-center bg-purple-800'>
+      <div 
+        className='flex justify-center text-white text-8xl m-8' 
+        style={{
+          fontFamily: 'Poppins, sans-serif',
+          fontWeight: '100'
+        }}
+      >
+        7days 
+      </div>
+      <div className='w-48 h-16 overflow-visible grid'>
+        <div 
+          className={"pointer-events-none flex items-center justify-center w-full col-start-1 row-start-1 transition-opacity duration-150 delay-100" + 
+            (!showLogin ? ' opacity-100 ' : ' opacity-0 ')
+          }
+        >
+          <Spin 
+            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} 
+            className=' text-white'
+          />
+        </div>
+        <button 
+          onClick={() => googleLogin()} 
+          className={"col-start-1 row-start-1 text-xl font-medium flex flex-row items-center justify-center bg-white rounded-lg w-48 h-16 transition-opacity duration-150 " + 
+            (showLogin ? ' opacity-100 ' : ' opacity-0 ')
+          }
+        >
+          Login With
+          <FaGoogle className='m-1' size={24}/>
+        </button>
+      </div>
     </div>
   )
 }

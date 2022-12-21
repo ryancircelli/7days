@@ -33,7 +33,7 @@ export const Header = ({data, extraProps, viewportRef}) => {
       <div className="py-4 text-xl font-bold flex-[2] text-center">
         Due Date
       </div>
-      <div className="w-16"/> 
+      <div className="w-12"/> 
     </div>
   );
 }

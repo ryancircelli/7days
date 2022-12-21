@@ -3,8 +3,37 @@ import { googleLogout } from '@react-oauth/google';
 import { resetSettings } from 'gapi/settings';
 
 import { Dropdown } from 'antd';
+import Cookies from 'js-cookie';
 
-export const Header = ({userInfo}) => {
+export const Header = ({userInfo, setCredential}) => {
+
+  const items = [
+    {
+      key: '1',
+      label: (
+        <button>
+          Reset Settings
+        </button>
+      ),
+      onClick: () => resetSettings(),
+    },
+    {
+      key: '2',
+      label: (
+        <button>
+          Logout
+        </button>
+      ),
+      onClick: async () => {
+        await googleLogout()
+        Cookies.set('refresh_token', undefined)
+        setCredential(undefined)
+        console.log('Logging Out')
+      }
+    },
+  ];
+
+
 
   return (  
     <div className="flex flex-row h-full w-full relative z-50">
@@ -30,6 +59,7 @@ export const Header = ({userInfo}) => {
             </div>
             <img 
               src={userInfo ? userInfo.data.picture : ""}
+              referrerPolicy="no-referrer"
               alt="User Profile"
               className='h-[80%] rounded-full'
             />
@@ -39,26 +69,3 @@ export const Header = ({userInfo}) => {
     </div>
   );
 }
-
-const items = [
-  {
-    key: '1',
-    label: (
-      <button 
-        onClick={() => resetSettings()}
-      >
-        Reset Settings
-      </button>
-    ),
-  },
-  {
-    key: '2',
-    label: (
-      <button 
-        onClick={() => googleLogout()}
-      >
-        Logout
-      </button>
-    ),
-  },
-];

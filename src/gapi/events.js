@@ -22,6 +22,18 @@ export const updateEvent = async (newItem) => {
   return calendar;
 }
 
+export const updateEventName = async (originalItem, newName) => {
+  let calendar = await axios.put('https://www.googleapis.com/calendar/v3/calendars/' + encodeURIComponent(originalItem.organizer.email) + '/events/' + encodeURIComponent(originalItem.id), {
+    start: originalItem.recurrence ? originalItem.originalStart : originalItem.start,
+    end: originalItem.recurrence ? originalItem.originalEnd : originalItem.end,
+    extendedProperties: originalItem.extendedProperties,
+    recurrence: originalItem.recurrence,
+    summary: newName
+  });
+  console.log(calendar)
+  return calendar;
+}
+
 export const updateEventPrivate = async (originalItem, privateProperties) => {
   let calendar = await axios.put('https://www.googleapis.com/calendar/v3/calendars/' + encodeURIComponent(originalItem.organizer.email) + '/events/' + encodeURIComponent(originalItem.id), {
     start: originalItem.recurrence ? originalItem.originalStart : originalItem.start,

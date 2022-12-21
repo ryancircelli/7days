@@ -4,7 +4,7 @@ import { FiMoreHorizontal } from "react-icons/fi";
 import { Modal, Button } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Url } from '../Url/Url';
-import { Dropdown } from '../Dropdown/Dropdown';
+import { PropDropdown } from '../PropDropdown/PropDropdown';
 import { deleteEvent } from 'gapi/events';
 
 const { confirm } = Modal;
@@ -72,7 +72,7 @@ export const SettingsButton = ({data, extraProps, getEvents}) => {
                         changeDefault={true}
                       />
                     : (prop.type === "dropdown") ?
-                      <Dropdown
+                      <PropDropdown
                         data={data} 
                         prop={prop} 
                         getEvents={getEvents} 

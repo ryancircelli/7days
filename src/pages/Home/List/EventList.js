@@ -9,7 +9,7 @@ import { convertDate } from 'libs/date';
 import { ViewportList } from 'react-viewport-list';
 import { DateTime } from 'luxon';
 
-export const EventList = ({events, settings, getEvents, className}) => {
+export const EventList = ({events, settings, getSavedSettings, getEvents, className}) => {
 
   const [filterCompleted, setFilterCompleted] = useState(true);
   const [filterFuture30, setFilterFuture30] = useState(true);
@@ -42,7 +42,7 @@ export const EventList = ({events, settings, getEvents, className}) => {
       </div>
         <div className='w-full flex-1' ref={ref}>
           <Scrollbars
-            className='w-full !overflow-scroll'
+            className='w-full'
             autoHide
             renderThumbVertical={()=>
               <div 
@@ -67,7 +67,7 @@ export const EventList = ({events, settings, getEvents, className}) => {
                 }}
               />
             }
-            renderView={props => <div {...props} className={ " min-w-[900px] " + (scrollable ? "" : " !mr-0 ")}/>}
+            renderView={props => <div {...props} className={ "" + (scrollable ? "" : " !overflow-hidden !mr-0 ")}/>}
           >
             {events_grouped.map(([key, value], index) => {
               return (
@@ -76,13 +76,15 @@ export const EventList = ({events, settings, getEvents, className}) => {
                   <ViewportList
                     viewportRef={ref}
                     items={value}
+                    overscan={10}
                   >
                     {(item) => (
                       <Row
                         key={item.id + item.convertedStart} 
                         data={item} 
-                        extraProps={extraProps} 
+                        settings={settings} 
                         getEvents={getEvents}
+                        getSavedSettings={getSavedSettings}
                         viewportRef={ref}
                         setScrollable={setScrollable}
                       />

@@ -4,13 +4,13 @@ import parseUrl from "parse-url";
 import { updateEventPrivate } from 'gapi/events';
 import { FiEdit } from "react-icons/fi";
 
-export const Url = ({data, prop, getEvents, changeDefault}) => {
+export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
   // add changeDefault logic
 
-  const eventValue = JSON.parse(data.extendedProperties?.private['default'] || "{}")[prop.name.toLowerCase()];
-  const [parsedEventValue, setParsedEventValue] = useState();
+  const eventValue = JSON.parse(data?.extendedProperties?.private['default'] || "{}")[prop.name.toLowerCase()];
+  const [parsedEventValue, setParsedEventValue] = useState(null);
 
-  const originalValue = data.recurringEventId && !changeDefault ? JSON.parse(data.extendedProperties?.private[data.recurringEventId] || "{}")[prop.name.toLowerCase()] : eventValue;
+  const originalValue = data?.recurringEventId && !changeDefault ? JSON.parse(data?.extendedProperties?.private[data?.recurringEventId] || "{}")[prop.name.toLowerCase()] : eventValue;
   const [value, setValue] = useState(originalValue);
   const [parsedURL, setParsedURL] = useState(null);
   const [valid, setValid] = useState(false);
@@ -155,7 +155,7 @@ export const Url = ({data, prop, getEvents, changeDefault}) => {
         />
       }
       <button 
-        className='w-8 h-full absolute group-hover:inline peer-focus:hidden hidden justify-center items-center'
+        className={'w-8 h-full absolute group-hover:inline peer-focus:hidden hidden justify-center items-center' + (disabled ? ' invisible ' : '')}
         style={{
           right: right + 'px'
         }}

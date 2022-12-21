@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Login } from '../pages/Login/Login'
 import { Home } from '../pages/Home/Home'
@@ -7,9 +7,11 @@ import React from "react";
 
 function App() {
 
-  const [credential, setCredential] = useState(null);
+  const [credential, setCredential] = useState(undefined);
 
-  if (credential == null)
+  useEffect(() => {}, [credential])
+
+  if (credential === undefined)
     return <Login setCredential={setCredential}/>
 
   axios.interceptors.request.use(function (config) {
@@ -17,7 +19,7 @@ function App() {
     return config;
   });
 
-  return <Home/>
+  return <Home setCredential={setCredential}/>
 
 }
 

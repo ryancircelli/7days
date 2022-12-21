@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from "axios";
 import defaultConfig from '../assets/defaultConfig.json'
-var HOOKS_VERBOSE = false;
 
 export const getSettings = async () => {
   let settings = await getStoredSettings();
   if (settings !== undefined) {
     console.log("Settings Exists")
-    if (HOOKS_VERBOSE === true) console.log(settings)
     return settings;
   }
   return await createSettings();
@@ -33,7 +31,19 @@ export const createSettings = async () => {
   }));
   let settings = await axios.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', formData);
   console.log("Settings Created")
-  if (HOOKS_VERBOSE === true) console.log(settings?.data)
+  return settings?.data;
+}
+
+export const updateSettings = async (newConfig) => {
+  let files = await listFiles();
+  let settings = files.find(file => file.title === "config.json")
+  if (settings === undefined) return undefined;
+  settings = await axios.patch(`https://www.googleapis.com/upload/drive/v3/files/${settings.id}?uploadType=media`, newConfig, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  console.log("Settings Updated")
   return settings?.data;
 }
 
@@ -43,7 +53,6 @@ export const getStoredSettings = async () => {
   if (settings === undefined) return undefined;
   let file = await getFile(settings.id)
   console.log("Settings Found")
-  if (HOOKS_VERBOSE === true) console.log(file)
   return file;
 }
 
@@ -76,7 +85,6 @@ export const listFiles = async () => {
 export const getFile = async (fileID) => {
   let file = await axios.get('https://www.googleapis.com/drive/v2/files/' + encodeURIComponent(fileID) + '?alt=media');
   console.log("File Found")
-  if (HOOKS_VERBOSE === true) console.log(file?.data)
   return file?.data;
 }
 
