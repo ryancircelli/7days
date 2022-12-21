@@ -38,7 +38,7 @@ export const getCalendar = async (calendarID) => {
 
 export const getCalendarBySummary = async (calendar_summary) => {
   let calendars = await listCalendars();
-  let calendar = calendars.find(calendar => calendar.summary == calendar_summary)
+  let calendar = calendars.find(calendar => calendar.summary === calendar_summary)
   if (calendar === undefined) {
     console.log("Calendar", calendar_summary, "Not Found")
     return false;
@@ -52,7 +52,7 @@ export const createCalendar = async (calendar_summary) => {
     summary: calendar_summary
   });
   console.log("Calendar", calendar_summary, "Created")
-  return calendar;
+  return calendar.data;
 }
 
 export const listEvents = async (calendarID) => {

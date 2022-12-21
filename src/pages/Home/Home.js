@@ -12,6 +12,8 @@ import { HomeMenu } from './HomeMenu/HomeMenu';
 import { Settings } from './Settings/Settings';
 import { Spin } from 'antd';
 import { RxPlus } from 'react-icons/rx';
+import { googleLogout } from '@react-oauth/google';
+import Cookies from 'js-cookie';
 
 export const Home = ({setCredential}) => {
 
@@ -27,7 +29,7 @@ export const Home = ({setCredential}) => {
   }, [calendar]);
 
   useEffect(() => {
-    if (calendar != null)
+    if (calendar !== null)
       getEvents()
   }, [calendar, getEvents]);
 
@@ -39,9 +41,9 @@ export const Home = ({setCredential}) => {
   }, []);
 
   useEffect(() => {
-    if (events == null)
+    if (calendar === null)
       get7days()
-  }, [events, get7days]);
+  }, [calendar, get7days]);
 
   const getUser = useCallback(async () => {
     let userInfo = await getUserInfo();
@@ -49,7 +51,7 @@ export const Home = ({setCredential}) => {
   }, []);
 
   useEffect(() => {
-    console.log(userInfo)
+    console.log("Profile:", userInfo)
     if (!userInfo)
       getUser()
   }, [getUser, userInfo]);
@@ -64,11 +66,13 @@ export const Home = ({setCredential}) => {
       getSavedSettings()
   }, [getSavedSettings, settings]);
 
-  const [fadeLogin, setFadeLogin] = useState(true)
+  useEffect(() => {
+    setTimeout(() => {
+      setShowLogout(true)
+    }, 2000);
+  }, [])
 
-  useEffect(()=>{
-    setFadeLogin(false)
-  },[])
+  const [showLogout, setShowLogout] = useState(false)
 
   if (events === null || userInfo === null || settings === null)
     return (
@@ -88,6 +92,25 @@ export const Home = ({setCredential}) => {
               indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} 
               className=' text-white'
             />
+          </div>
+          <div className="col-start-1 row-start-1 text-xl font-normal flex flex-row items-center justify-center bg-white rounded-lg w-48 h-16 transition-opacity duration-150 opacity-0 pointer-events-none"/>
+          <div className='col-start-1 row-start-2 flex items-center justify-center pt-4'>
+            <button 
+              onClick={async () => {
+                await googleLogout()
+                Cookies.set('refresh_token', undefined)
+                setCredential(undefined)
+                console.log('Logging Out')
+              }} 
+              className={"text-xl font-normal flex flex-row items-center justify-center bg-white rounded-lg w-32 h-16 transition-opacity duration-150 " + 
+                (showLogout ? ' opacity-100 ' : ' opacity-0 ')
+              }
+              style={{
+                fontFamily: 'Roboto, sans-serif',
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>

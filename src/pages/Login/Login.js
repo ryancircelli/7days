@@ -1,4 +1,4 @@
-import { useGoogleLogin } from '@react-oauth/google';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 import Cookies from 'js-cookie'
 import React, { useState } from 'react';
@@ -11,7 +11,7 @@ import { Spin } from 'antd';
 export const Login = ({setCredential}) => {
   const getRefresh = async (refresh_token) => {
     try {
-      console.log(refresh_token)
+      console.log("Refresh Token:", refresh_token)
       const tokens = await axios.post(
         'https://www.googleapis.com/oauth2/v4/token', {
             refresh_token: refresh_token,
@@ -24,17 +24,17 @@ export const Login = ({setCredential}) => {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         });
-
-      console.log(tokens);
+      console.log("Credential Request Response:", tokens);
       setCredential(tokens.data.access_token)
       return tokens;
     } catch (error) {
       console.log('Failed Auth Refresh')
+      return false;
     }
   }
 
   const getCredentials = async (refresh_token) => {
-    console.log(refresh_token)
+    console.log("Refresh Token:", refresh_token)
     let tokens = await axios.post(
       'https://www.googleapis.com/oauth2/v4/token', {
           code: refresh_token,
@@ -47,7 +47,7 @@ export const Login = ({setCredential}) => {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
-    console.log(tokens);
+    console.log("Credential Request Response:", tokens);
     setTimeout(async () => {
       setCredential(tokens.data.access_token)
     }, 250);
@@ -56,16 +56,23 @@ export const Login = ({setCredential}) => {
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
+    scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file',
     onSuccess: async (codeResponse) => {
       setShowLogin(false)
-      console.log(codeResponse);
+      console.log("Access Token:", codeResponse);
       var tokens = await getCredentials(codeResponse.code)
       Cookies.set('refresh_token', tokens.data.refresh_token) 
+      setTimeout(() => {
+        setShowLogout(true)
+      }, 2000);
     },
-    onError: errorResponse => console.log(errorResponse),
+    onError: errorResponse => {
+      console.log('Login Failed:', errorResponse)
+    },
   });
 
   const [showLogin, setShowLogin] = useState(false)
+  const [showLogout, setShowLogout] = useState(false)
 
   useEffect(()=> {
     setTimeout(() => {
@@ -99,9 +106,11 @@ export const Login = ({setCredential}) => {
           />
         </div>
         <button 
-          onClick={() => googleLogin()} 
+          onClick={() =>
+            googleLogin()
+          } 
           className={"col-start-1 row-start-1 text-xl font-normal flex flex-row items-center justify-center bg-white rounded-lg w-48 h-16 transition-opacity duration-150 " + 
-            (showLogin ? ' opacity-100 ' : ' opacity-0 ')
+            (showLogin ? ' opacity-100 ' : ' opacity-0 pointer-events-none ')
           }
           style={{
             fontFamily: 'Roboto, sans-serif',
@@ -114,6 +123,28 @@ export const Login = ({setCredential}) => {
             className='m-2 mr-0 h-8'
           />
         </button>
+        <div className='col-start-1 row-start-2 flex items-center justify-center pt-4'>
+          <button 
+            onClick={async () => {
+              await googleLogout()
+              Cookies.set('refresh_token', undefined)
+              setCredential(undefined)
+              console.log('Logging Out')
+              setShowLogout(false)
+              setTimeout(() => {
+                setShowLogin(true)
+              }, 250);
+            }} 
+            className={"text-xl font-normal flex flex-row items-center justify-center bg-white rounded-lg w-32 h-16 transition-opacity duration-150 " + 
+              (showLogout ? ' opacity-100 ' : ' opacity-0 pointer-events-none ')
+            }
+            style={{
+              fontFamily: 'Roboto, sans-serif',
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   )
