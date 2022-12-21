@@ -12,15 +12,6 @@ export const Header = ({userInfo, setCredential}) => {
       key: '1',
       label: (
         <button>
-          Reset Settings
-        </button>
-      ),
-      onClick: () => resetSettings(),
-    },
-    {
-      key: '2',
-      label: (
-        <button>
           Logout
         </button>
       ),

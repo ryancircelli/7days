@@ -17,6 +17,7 @@ export const Recurring = ({recurringEnabled, recurring, setRecurring, childrenRe
           <InputNumber 
             min={1} 
             value={recurring.freqRate}
+            autoComplete='off'
             onChange={(value) => setRecurring({
               ...recurring,
               freqRate: value
@@ -102,6 +103,7 @@ export const Recurring = ({recurringEnabled, recurring, setRecurring, childrenRe
             >
               <InputNumber 
                 disabled
+                autoComplete='off'
                 className='w-full invisible'
               />
             </div>
@@ -151,6 +153,7 @@ export const Recurring = ({recurringEnabled, recurring, setRecurring, childrenRe
             >
               <InputNumber 
                 addonAfter={"occurance" + (recurring.ends_after > 1 ? 's' : '')}
+                autoComplete='off'
                 disabled={recurring.ends !== 'after'}
                 onChange={(value) => setRecurring({
                   ...recurring,

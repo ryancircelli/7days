@@ -20,3 +20,7 @@ body {
   font-family: 'Poppins',serif;
   font-weight: 300;
 }
+
+.ant-btn-primary {
+  background-color: #1677ff;
+}

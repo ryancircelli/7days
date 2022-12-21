@@ -1,3 +1,4 @@
+import { resetSettings } from 'gapi/settings';
 import React, { useState, useRef, useEffect } from 'react';
 import { Header } from '../List/Header/Header';
 import { Completed } from '../List/Row/Completed/Completed';
@@ -14,74 +15,82 @@ export const Settings = ({settings, className}) => {
         Settings
       </div>
       <div>
-      <Header data={"Name"} extraProps={extraProps} viewportRef={undefined}/>
-      <div className="grid group/row">
-        <div className='z-1 group-hover/row:border pointer-events-none ml-4 mr-6' style={{gridArea: '1/1'}}/>
-        <div className="flex flex-row h-12 ml-4 mr-6" style={{gridArea: '1/1'}}>
-          <div className="flex w-10 justify-center items-center">
-            <Completed
-              data={undefined} 
-              getEvents={undefined}
-              disabled
-            />
-          </div>
-          <div
-            style={{
-              flex: extraProps.length
-            }}
-            className="flex items-center"
-          >
-            <Text
-              data={undefined}
-              getEvents={undefined}
-              disabled
-            />
-          </div>
-          {extraProps.map((prop, index) => 
-            <div
-              key={prop.name}
-              className="flex-1"
-            >
-            {
-              (prop.type === "url") ?
-                <Url
-                  data={undefined} 
-                  prop={prop}
-                  getEvents={undefined}
-                  key={prop.name}
-                  changeDefault={false}
-                  disabled
-                />
-              : (prop.type === "dropdown") ?
-                <PropDropdown
-                  data={undefined} 
-                  settings={settings}
-                  prop={prop} 
-                  getEvents={undefined} 
-                  key={prop.name}
-                  changeDefault={false}
-                  disabled
-                />
-              : 
-                prop.name.toLowerCase()
-            }
+        <button 
+          onClick={()=>{
+            resetSettings()
+          }}
+          className="p-2 m-4 mb-0 rounded-lg bg-white brightness-95 hover:brightness-90"
+        >
+          Reset Settings
+        </button>
+        <Header data={"Name"} extraProps={extraProps} viewportRef={undefined}/>
+        <div className="grid group/row">
+          <div className='z-1 group-hover/row:border pointer-events-none ml-4 mr-6' style={{gridArea: '1/1'}}/>
+          <div className="flex flex-row h-12 ml-4 mr-6" style={{gridArea: '1/1'}}>
+            <div className="flex w-10 justify-center items-center">
+              <Completed
+                data={undefined} 
+                getEvents={undefined}
+                disabled
+              />
             </div>
-          )}
-          <div
-            className="flex-[2] flex items-center"
-          >
-            <Date
-              data={undefined} 
-              getEvents={undefined}
-              setScrollable={undefined}
-              disabled
+            <div
+              style={{
+                flex: extraProps.length
+              }}
+              className="flex items-center"
+            >
+              <Text
+                data={undefined}
+                getEvents={undefined}
+                disabled
+              />
+            </div>
+            {extraProps.map((prop, index) => 
+              <div
+                key={prop.name}
+                className="flex-1"
+              >
+              {
+                (prop.type === "url") ?
+                  <Url
+                    data={undefined} 
+                    prop={prop}
+                    getEvents={undefined}
+                    key={prop.name}
+                    changeDefault={false}
+                    disabled
+                  />
+                : (prop.type === "dropdown") ?
+                  <PropDropdown
+                    data={undefined} 
+                    settings={settings}
+                    prop={prop} 
+                    getEvents={undefined} 
+                    key={prop.name}
+                    changeDefault={false}
+                    disabled
+                  />
+                : 
+                  prop.name.toLowerCase()
+              }
+              </div>
+            )}
+            <div
+              className="flex-[2] flex items-center"
+            >
+              <Date
+                data={undefined} 
+                getEvents={undefined}
+                setScrollable={undefined}
+                disabled
+              />
+            </div>
+            <div
+              className="flex w-16 justify-center items-center invisible group-hover/row:visible"
             />
           </div>
-          <div
-            className="flex w-16 justify-center items-center invisible group-hover/row:visible"
-          />
         </div>
-      </div>
       </div>
     </div>
   );
