@@ -102,7 +102,7 @@ export const Home = ({setCredential}) => {
           <div className='row-span-1 h-12'>
             <Header userInfo={userInfo} setCredential={setCredential}/>
           </div>
-          <div className='row-span-1 flex flex-row'>
+          <div className='relative row-span-1 flex flex-row'>
             <div className='flex'>
               <HomeMenu page={page} setPage={setPage}/>
             </div>

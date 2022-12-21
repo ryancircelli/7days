@@ -37,7 +37,7 @@ export const EventList = ({events, settings, getSavedSettings, getEvents, classN
 
   return (
     <div className={'w-full flex flex-1 flex-col overflow-y-hidden ' + className}>
-      <div className="sticky top-0 z-50">
+      <div className="sticky top-0">
         <Controls toggleFilterCompleted={toggleFilterCompleted} toggleFilterFuture30={toggleFilterFuture30} listRef={listRef} events_grouped={events_grouped}/>
       </div>
         <div className='w-full flex-1' ref={ref}>

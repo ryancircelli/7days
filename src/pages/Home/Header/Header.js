@@ -36,7 +36,7 @@ export const Header = ({userInfo, setCredential}) => {
 
 
   return (  
-    <div className="flex flex-row h-full w-full relative z-50">
+    <div className="flex flex-row h-full w-full relative">
       <div 
         className='flex justify-center text-white text-6xl -mt-2' 
         style={{

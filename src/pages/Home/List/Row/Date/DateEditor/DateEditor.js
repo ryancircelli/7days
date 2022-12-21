@@ -136,6 +136,9 @@ export const DateEditor = ({data, showEditor, getEvents}) => {
             newData.end.dateTime = endDate.toISOString();
             delete newData.end.date;
           }
+          if (tab === 0) {
+            newData.end.dateTime = newData.start.dateTime;
+          }
         } else {
           if (startDate) {
             newData.start.date = startDate.toISOString().slice(0,10);
