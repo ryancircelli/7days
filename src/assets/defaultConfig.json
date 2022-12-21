@@ -48,34 +48,9 @@
       "index": 3,
       "options": [
         {
-          "name": "CDA3101",
-          "color": "#0076BE",
-          "index": 0
-        },
-        {
-          "name": "CAP3032",
-          "color": "#F05E16",
-          "index": 1
-        },
-        {
-          "name": "EIN3354",
-          "color": "#20EE00",
-          "index": 2
-        },
-        {
-          "name": "ECP3302",
-          "color": "#FF6BD9",
-          "index": 3
-        },
-        {
-          "name": "SigEp",
-          "color": "#A569BD",
-          "index": 4
-        },
-        {
           "name": "Other",
           "color": "#979A9A",
-          "index": 5
+          "index": 1
         }
       ]
     }
