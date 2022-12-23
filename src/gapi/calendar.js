@@ -83,8 +83,6 @@ export const listEvents = async (calendarID) => {
       formatedStart: convertDate(start_date, start_date_or_time),
       convertedEnd: end_date,
       formatedEnd: convertDate(end_date, end_date_or_time),
-      f1: start_date.startOf('day').toMillis(),
-      f2: start_date.toMillis(),
       type: (start_date.toMillis() === end_date.plus({ days: -1 }).toMillis() && start_date.startOf('day').toMillis() === start_date.toMillis()) ? 'day_event' : 
             (start_date.toMillis() === end_date.toMillis()) ? 'task' : 
             (start_date.startOf('day').toMillis() === end_date.startOf('day').toMillis()) ? 'single_day_event' : 
@@ -111,22 +109,27 @@ const convertToRecurring = (event) => {
   if (event.recurrence === undefined) return [event];
   let output = [];
 
+  let start_date = DateTime.fromISO(event.start.date ? event.start.date : event.start.dateTime);
+
   const eventStart = new Date(event.start.date ? event.start.date : event.start.dateTime);
   const eventEnd = new Date(event.end.date ? event.end.date : event.end.dateTime);
   const eventLength = eventEnd.valueOf() - eventStart.valueOf();
   const ruleOptions = RRule.parseString(event.recurrence[0]);
   ruleOptions.dtstart = eventStart;
   const rule = new RRule(ruleOptions);
-
+  //1669939200000
   let dates = rule.between(eventStart, DateTime.now().plus({years: 10}).toJSDate(), true)
   for (let [index, date] of dates.entries()) {
-    let occuranceEnd = new Date(date.valueOf() + eventLength.valueOf());
+    let occuranceStart = DateTime.fromMillis(date.valueOf(), {zone: 'utc'});
+    occuranceStart = occuranceStart.setZone(start_date.zone, { keepLocalTime: true })
+    let occuranceEnd = DateTime.fromMillis(date.valueOf() + eventLength.valueOf(), {zone: 'utc'});
+    occuranceEnd = occuranceEnd.setZone(start_date.zone, { keepLocalTime: true })
   	output.push({
       ...event,
       originalStart: event.start.date ? { date: event.start.date } : { dateTime: event.start.dateTime, timeZone: event.start.timeZone },
       originalEnd: event.end.date ? { date: event.end.date } : { dateTime: event.end.dateTime, timeZone: event.end.timeZone  },
-      start: event.start.date ? { date: date.toISOString(), timeZone: event.start.timeZone } : { dateTime: date.toISOString(), timeZone: event.start.timeZone  },
-      end: event.end.date ? { date: occuranceEnd.toISOString(), timeZone: event.start.timeZone } : { dateTime: occuranceEnd.toISOString(), timeZone: event.end.timeZone  },
+      start: event.start.date ? { date: occuranceStart.toISO(), timeZone: event.start.timeZone } : { dateTime: occuranceStart.toISO(), timeZone: event.start.timeZone  },
+      end: event.end.date ? { date: occuranceEnd.toISO(), timeZone: event.start.timeZone } : { dateTime: occuranceEnd.toISO(), timeZone: event.end.timeZone  },
       rrule: ruleOptions,
       recurringEventId: (event.id + index)
     })

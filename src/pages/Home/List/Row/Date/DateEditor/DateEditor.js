@@ -15,7 +15,7 @@ export const DateEditor = ({data, showEditor, getEvents}) => {
   );
   const [timeEnabled, setTimeEnabled] = useState(data.formatedStart.time !== null);
 
-  const [recurringEnabled, setRecurringEnabled] = useState(data.recurrence);
+  const [recurringEnabled, setRecurringEnabled] = useState(data.recurrence ? true : false);
   let defaultWeekdays = [false, false, false, false, false, false, false];
   defaultWeekdays[data.convertedStart.weekday - 1] = true;
   let defaultRecurring = {
@@ -45,6 +45,7 @@ export const DateEditor = ({data, showEditor, getEvents}) => {
   }
 
   useEffect(() => {
+    console.log(data.recurrence)
     if (!recurringEnabled) return;
     let output = defaultRecurring;
     if (data.rrule.freq !== undefined)
@@ -155,7 +156,7 @@ export const DateEditor = ({data, showEditor, getEvents}) => {
         }
         if (deepEqual(data, newData)) 
           return;
-        let output = {...newData, type: undefined}
+        let output = {...newData, type: undefined, recurringEventId: undefined}
         await updateEvent(output)
         getEvents();
       }, 1000)
