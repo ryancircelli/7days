@@ -1,29 +1,111 @@
-import React from 'react';
+import { Select } from 'antd';
+import { SlEqualizer } from "react-icons/sl";
+import React, { useEffect, useRef, useState }  from 'react';
 
-export const Controls = ({toggleFilterCompleted, toggleFilterFuture30, listRef, events_grouped}) => {
+export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30, filterFuture30, listRef, events_grouped}) => {
+
+  const timer = useRef(null);
+
+  const [selectedFilter, setSelectedFilter] = useState([]);
+
+  const [buttonHover, setButtonHover] = useState(false);
+  const [dropdownHover, setDropdownHover] = useState(false);
+
+  const options = [
+    {
+      label: (
+        <div className='mt-[3px]'>
+          Filter Completed
+        </div>
+      ),
+      value: 'filterCompleted',
+      className: '!my-[3px] !pt-[3px] !rounded-xl !bg-white hover:brightness-95'
+    },
+    {
+      label: (
+        <div className='mt-[3px]'>
+          Filter Next 30 Days
+        </div>
+      ),
+      value: 'filterFuture30',
+      className: '!my-[3px] !pt-[3px] !rounded-xl !bg-white hover:brightness-95'
+    }
+  ];
+  
+  useEffect(() => {
+    let newSelectedFilter = []
+    if (filterCompleted)
+      newSelectedFilter.push("filterCompleted")
+    if (filterFuture30)
+      newSelectedFilter.push("filterFuture30")
+    setSelectedFilter(newSelectedFilter)
+  }, []);
+
   return (  
     <div className="w-full">
-      <div className='w-full'>
+      <div className=' flex flex-row justify-between w-full px-2'>
         <button
-          className="bg-white rounded-lg p-2 mx-2 mt-2 hover:brightness-95"
+          className="bg-white rounded-xl p-2 mt-2 hover:brightness-[0.975]"
           onClick={() => {
             listRef.current[1].scrollIntoView()  
           }}
         >
           Today
         </button>
-        <button 
-          className="bg-white rounded-lg p-2 mx-2 mt-2 hover:brightness-95"
-          onClick={() => toggleFilterCompleted()}
+        <div 
+          className='w-48'
+          onMouseLeave={() => setButtonHover(false)}
         >
-          Filter Completed
-        </button>
-        <button 
-          className="bg-white rounded-lg p-2 mx-2 mt-2 hover:brightness-95"
-          onClick={() => toggleFilterFuture30()}
-        >
-          Filter Next 30 Days
-        </button>
+          <button
+            className={"absolute right-0 bg-white rounded-xl p-3 mx-2 mt-2 hover:brightness-[0.975] " +
+              (buttonHover || dropdownHover ? ' brightness-[0.975] ' : ' ')
+            }
+            onMouseEnter={() => {
+              clearInterval(timer.current);
+              timer.current = null;
+              setButtonHover(true)
+            }}
+            onMouseLeave={() => {
+              timer.current = setTimeout(() => {
+                setButtonHover(false)
+              }, 500)
+            }}
+            onClick={() => {
+              setButtonHover(!buttonHover)
+            }}
+          >
+            <SlEqualizer size={16}/>
+          </button>
+          <Select
+            mode='multiple'
+            open={buttonHover || dropdownHover}
+            className='absolute top-3 right-2 w-48 invisible'
+            tagRender={()=>null}
+            value={selectedFilter}
+            onSelect={(selectFilter) => {
+              setSelectedFilter([...selectedFilter, selectFilter])
+              if (selectFilter === 'filterCompleted')
+                setFilterCompleted(true)
+              if (selectFilter === 'filterFuture30')
+                setFilterFuture30(true)
+            }}
+            onDeselect={(selectFilter) => {
+              setSelectedFilter(selectedFilter.filter(filter => filter !== selectFilter))
+              if (selectFilter === 'filterCompleted')
+                setFilterCompleted(false)
+              if (selectFilter === 'filterFuture30')
+                setFilterFuture30(false)
+            }}
+            onMouseEnter={() => {
+              setDropdownHover(true)
+            }}
+            onMouseLeave={() => {
+              setDropdownHover(false)
+            }}
+            popupClassName='px-[6px] py-[4px] rounded-2xl'
+            options={options}
+          />
+        </div>
       </div>
     </div>
   );

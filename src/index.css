@@ -24,3 +24,17 @@ body {
 .ant-btn-primary {
   background-color: #1677ff;
 }
+
+.ant-select-item-option-selected {
+  filter: brightness(97.5%);
+  background-color: white !important;
+}
+
+.ant-select-item-option {
+  font-family: 'Poppins',serif;
+  font-weight: 300 !important;
+}
+
+.anticon-check {
+  color: black
+}

@@ -24,21 +24,20 @@ export const EventList = ({events, settings, getSavedSettings, getEvents, classN
 
   let events_grouped = groupBy(filtered_events, event => convertDate(event.convertedStart).clumped_date)
 
-  const toggleFilterCompleted = () => {
-    setFilterCompleted(!filterCompleted);
-  }
-
-  const toggleFilterFuture30 = () => {
-    setFilterFuture30(!filterFuture30);
-  }
-
   const ref = useRef(null);
   const listRef = useRef([]);
 
   return (
     <div className={'w-full flex flex-1 flex-col overflow-y-hidden ' + className}>
       <div className="sticky top-0">
-        <Controls toggleFilterCompleted={toggleFilterCompleted} toggleFilterFuture30={toggleFilterFuture30} listRef={listRef} events_grouped={events_grouped}/>
+        <Controls 
+          setFilterCompleted={setFilterCompleted}
+          setFilterFuture30={setFilterFuture30} 
+          listRef={listRef} 
+          events_grouped={events_grouped}
+          filterCompleted={filterCompleted}
+          filterFuture30={filterFuture30}
+        />
       </div>
         <div className='w-full flex-1' ref={ref}>
           <Scrollbars
@@ -73,7 +72,11 @@ export const EventList = ({events, settings, getSavedSettings, getEvents, classN
             {events_grouped.map(([key, value], index) => {
               return (
                 <div key={key} ref={el => listRef.current[index] = el}>
-                  <Header data={key} extraProps={extraProps} viewportRef={ref}/>
+                  <Header 
+                    data={key} 
+                    extraProps={extraProps} 
+                    viewportRef={ref}
+                  />
                   <ViewportList
                     viewportRef={ref}
                     items={value}
