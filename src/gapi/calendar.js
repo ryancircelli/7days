@@ -83,9 +83,11 @@ export const listEvents = async (calendarID) => {
       formatedStart: convertDate(start_date, start_date_or_time),
       convertedEnd: end_date,
       formatedEnd: convertDate(end_date, end_date_or_time),
-      type: (start_date.toMillis() === end_date.plus({ days: -1 }).toMillis() && start_date.toUTC().startOf('day').toMillis() === start_date.toMillis()) ? 'day_event' : 
+      f1: start_date.startOf('day').toMillis(),
+      f2: start_date.toMillis(),
+      type: (start_date.toMillis() === end_date.plus({ days: -1 }).toMillis() && start_date.startOf('day').toMillis() === start_date.toMillis()) ? 'day_event' : 
             (start_date.toMillis() === end_date.toMillis()) ? 'task' : 
-            (start_date.toUTC().startOf('day').toMillis()  === end_date.toUTC().startOf('day').toMillis()) ? 'single_day_event' : 
+            (start_date.startOf('day').toMillis() === end_date.startOf('day').toMillis()) ? 'single_day_event' : 
             'multi_day_event'
     }
   })
