@@ -32,10 +32,9 @@ export const convertDates = (convertedDateStart, convertedDateEnd) => {
   return convertedDateStart.date_text + " - " + convertedDateEnd.date_text;
 }
 
-
 export const convertDate = (date_string, time_enabled) => {
-  let date  = DateTime.fromISO(date_string).startOf('day');
-  let today = DateTime.now().startOf('day')
+  let date  = DateTime.fromISO(date_string).toUTC().startOf('day');
+  let today = DateTime.now().toUTC().startOf('day')
   let date_time = DateTime.fromISO(date_string);
 
   let day = date.toFormat("LLL d");

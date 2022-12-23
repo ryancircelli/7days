@@ -83,9 +83,9 @@ export const listEvents = async (calendarID) => {
       formatedStart: convertDate(start_date, start_date_or_time),
       convertedEnd: end_date,
       formatedEnd: convertDate(end_date, end_date_or_time),
-      type: (start_date.toMillis()  === end_date.plus({ days: -1 }).toMillis()  && start_date.startOf('day').toMillis()  === start_date.toMillis()) ? 'day_event' : 
-            (start_date.toMillis()  === end_date.toMillis()) ? 'task' : 
-            (start_date.startOf('day').toMillis()  === end_date.startOf('day').toMillis()) ? 'single_day_event' : 
+      type: (start_date.toMillis() === end_date.plus({ days: -1 }).toMillis() && start_date.toUTC().startOf('day').toMillis() === start_date.toMillis()) ? 'day_event' : 
+            (start_date.toMillis() === end_date.toMillis()) ? 'task' : 
+            (start_date.toUTC().startOf('day').toMillis()  === end_date.toUTC().startOf('day').toMillis()) ? 'single_day_event' : 
             'multi_day_event'
     }
   })
@@ -121,10 +121,10 @@ const convertToRecurring = (event) => {
     let occuranceEnd = new Date(date.valueOf() + eventLength.valueOf());
   	output.push({
       ...event,
-      originalStart: event.start.date ? { date: eventStart.toISOString() } : { dateTime: eventStart.toISOString(), timeZone: event.start.timeZone  },
-      originalEnd: event.end.date ? { date: eventEnd.toISOString() } : { dateTime: eventEnd.toISOString(), timeZone: event.end.timeZone  },
-      start: event.start.date ? { date: date.toISOString() } : { dateTime: date.toISOString(), timeZone: event.start.timeZone  },
-      end: event.end.date ? { date: occuranceEnd.toISOString() } : { dateTime: occuranceEnd.toISOString(), timeZone: event.end.timeZone  },
+      originalStart: event.start.date ? { date: event.start.date } : { dateTime: event.start.dateTime, timeZone: event.start.timeZone },
+      originalEnd: event.end.date ? { date: event.end.date } : { dateTime: event.end.dateTime, timeZone: event.end.timeZone  },
+      start: event.start.date ? { date: date.toISOString(), timeZone: event.start.timeZone } : { dateTime: date.toISOString(), timeZone: event.start.timeZone  },
+      end: event.end.date ? { date: occuranceEnd.toISOString(), timeZone: event.start.timeZone } : { dateTime: occuranceEnd.toISOString(), timeZone: event.end.timeZone  },
       rrule: ruleOptions,
       recurringEventId: (event.id + index)
     })
