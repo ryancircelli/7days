@@ -19,7 +19,7 @@ export const Settings = ({settings, className}) => {
           onClick={()=>{
             resetSettings()
           }}
-          className="p-2 m-4 mb-0 rounded-lg bg-white brightness-95 hover:brightness-90"
+          className="p-2 m-4 mb-0 rounded-lg bg-white brightness-[.975] hover:brightness-95"
         >
           Reset Settings
         </button>

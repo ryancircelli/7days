@@ -79,7 +79,7 @@ const MenuItem = ({collapsed, name, iconName, icon, selected, onClick, className
     >
       {IconComponent}
       <div className={'transition-[opacity] ease-in-out duration-150' +
-        (collapsed ? " opacity-0 " : " opacity-100 delay-75 ")
+        (collapsed ? " opacity-0 pointer-events-none " : " opacity-100 delay-75 ")
       }>
         <div className={'transition-[transform] ease-in-out duration-150 mr-4 text-sm' +
           (collapsed ? " -translate-x-36 delay-75 " : " translate-x-0")

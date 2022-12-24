@@ -153,16 +153,16 @@ export const Home = ({setCredential}) => {
         </div>
       </div>
       <button 
-        className='absolute right-8 bottom-8 w-14 h-14 bg-white hover:brightness-95 rounded-full z-[1000] flex items-center justify-center'
+        className='absolute right-9 bottom-9 w-12 h-12 bg-white hover:brightness-[.975] rounded-full z-[1000] flex items-center justify-center'
         style={{
-          boxShadow: '0 0 32px rgb(0,0,0,0.1)'
+          boxShadow: '0 0 32px rgb(0,0,0,0.16)'
         }}
         onClick={async ()=>{
           await createEvent(calendar.id)
           getEvents()
         }}
       >
-        <RxPlus className="align-bottom w-[50%] h-[50%]"/>
+        <RxPlus size={21} className="align-bottom"/>
       </button>
     </div>
   );
