@@ -138,6 +138,7 @@ export const Home = ({setCredential}) => {
                 className={'relative w-full h-full transition-opacity duration-150 row-start-1 col-start-1' + 
                   (page === 'upcoming' ? " opacity-100 " : " opacity-0 pointer-events-none ")
                 }
+                calendar={calendar}
               />
               <div className={'w-full h-full transition-opacity duration-150 row-start-1 col-start-1' + 
                 (page === 'calendar' ? " opacity-100 " : " opacity-0 pointer-events-none ")
@@ -152,18 +153,6 @@ export const Home = ({setCredential}) => {
           </div>
         </div>
       </div>
-      <button 
-        className='absolute right-9 bottom-9 w-12 h-12 bg-white hover:brightness-[.975] rounded-full z-[1000] flex items-center justify-center'
-        style={{
-          boxShadow: '0 0 32px rgb(0,0,0,0.16)'
-        }}
-        onClick={async ()=>{
-          await createEvent(calendar.id)
-          getEvents()
-        }}
-      >
-        <RxPlus size={21} className="align-bottom"/>
-      </button>
     </div>
   );
 }

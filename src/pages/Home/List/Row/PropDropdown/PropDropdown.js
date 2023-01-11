@@ -6,7 +6,7 @@ import { updateSettings } from 'gapi/settings';
 import { ColorPicker } from './ColorPicker/ColorPicker';
 
 export const PropDropdown = ({data, settings, getSavedSettings, prop, getEvents, changeDefault, disabled}) => {
-  let key = data?.recurringEventId && !changeDefault && (JSON.parse(data?.extendedProperties?.private[data.recurringEventId] || "{}")[prop.name.toLowerCase()] !== undefined) ? data?.recurringEventId : 'default'
+  let key = data?.recurringEventId && !changeDefault && (JSON.parse(data?.extendedProperties?.private[("recurrecnce" + data.recurringEventId)] || "{}")[prop.name.toLowerCase()] !== undefined) ? ("recurrecnce" + data.recurringEventId) : 'default'
   
   const [show, setShow] = useState(false)
   const ref = useRef(null);
@@ -50,7 +50,7 @@ export const PropDropdown = ({data, settings, getSavedSettings, prop, getEvents,
               }}
               onClick={async (e) => {
                 let privateProps = {...data.extendedProperties?.private}
-                let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+                let key = data.recurringEventId && !changeDefault ? ("recurrecnce" + data.recurringEventId) : 'default'
                 privateProps[key] = JSON.stringify({
                   ...JSON.parse(privateProps[key] || "{}"),
                   [prop.name.toLowerCase()]: option
@@ -76,7 +76,7 @@ export const PropDropdown = ({data, settings, getSavedSettings, prop, getEvents,
             className="flex-1 rounded bg-white brightness-95 hover:brightness-90"
             onClick={async () => {
               let privateProps = {...data.extendedProperties?.private}
-              let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+              let key = data.recurringEventId && !changeDefault ? ("recurrecnce" + data.recurringEventId) : 'default'
               let privatePropsKey = JSON.parse(privateProps[key] || "{}")
               delete privatePropsKey[prop.name.toLowerCase()]
               privateProps[key] = JSON.stringify(privatePropsKey)

@@ -6,12 +6,12 @@ import { Text } from './Text/Text';
 import { Url } from './Url/Url';
 import { SettingsButton } from './Settings/SettingsButton';
 
-export const Row = ({data, settings, getSavedSettings, getEvents, viewportRef, setScrollable}) => {
+export const Row = ({data, settings, getSavedSettings, getEvents, viewportRef, setScrollable, condensed, last, first}) => {
   useEffect(()=>{}, [data, settings])
   return (
     <div className="grid group/row">
-      <div className='z-1 group-hover/row:border pointer-events-none ml-4 mr-6' style={{gridArea: '1/1'}}/>
-      <div className="flex flex-row h-12 ml-4 mr-6" style={{gridArea: '1/1'}}>
+      <div className={'z-1 group-hover/row:border pointer-events-none ml-4 mr-6 border-gray-100 ' + (condensed && !first ? " group-hover/row:border-t-0 " : " ")}style={{gridArea: '1/1'}}/>
+      <div className={"flex flex-row ml-4 mr-6 border-gray-100 " + (condensed ? " h-9 " : " h-12 ") + (condensed && !last ? " border-b " : " ")} style={{gridArea: '1/1'}}>
         <div className="flex w-10 justify-center items-center">
           <Completed
             data={data}
@@ -21,7 +21,7 @@ export const Row = ({data, settings, getSavedSettings, getEvents, viewportRef, s
         </div>
         <div
           style={{
-            flex: settings.extraProperties.length
+            flex: settings.extraProperties.length + 2
           }}
           className="flex items-center"
         >
@@ -58,7 +58,7 @@ export const Row = ({data, settings, getSavedSettings, getEvents, viewportRef, s
                 settings={settings}   
               />
             : 
-              JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.[prop.name.toLowerCase()]
+              JSON.parse(data.extendedProperties?.private[data.recurringEventId ? ("recurrecnce" + data.recurringEventId) : "default"] || "{}")?.[prop.name.toLowerCase()]
           }
           </div>
         )}

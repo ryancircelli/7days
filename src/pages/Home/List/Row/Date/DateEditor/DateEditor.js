@@ -7,6 +7,7 @@ import { RRule } from 'rrule'
 import deepEqual from 'deep-equal'
 
 export const DateEditor = ({data, showEditor, getEvents}) => {
+  console.log(data)
 
   const ref = useRef(null);
   const childrenRef = useRef([]);

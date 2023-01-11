@@ -1,8 +1,8 @@
 import { Select } from 'antd';
-import { SlEqualizer } from "react-icons/sl";
+import { SlEqualizer, SlRefresh } from "react-icons/sl";
 import React, { useEffect, useRef, useState }  from 'react';
 
-export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30, filterFuture30, listRef, events_grouped}) => {
+export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30, filterFuture30, listRef, events_grouped, getEvents, setCondensed, condensed}) => {
 
   const timer = useRef(null);
 
@@ -12,6 +12,15 @@ export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30
   const [dropdownHover, setDropdownHover] = useState(false);
 
   const options = [
+    {
+      label: (
+        <div className='mt-[3px]'>
+          Condensed View
+        </div>
+      ),
+      value: 'condensed',
+      className: '!my-[3px] !pt-[3px] !rounded-xl !bg-white hover:brightness-95'
+    },
     {
       label: (
         <div className='mt-[3px]'>
@@ -38,12 +47,14 @@ export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30
       newSelectedFilter.push("filterCompleted")
     if (filterFuture30)
       newSelectedFilter.push("filterFuture30")
+    if (condensed)
+      newSelectedFilter.push("condensed")
     setSelectedFilter(newSelectedFilter)
   }, []);
 
   return (  
     <div className="w-full">
-      <div className=' flex flex-row justify-between w-full px-2'>
+      <div className='flex flex-row justify-between w-full px-2'>
         <button
           className="bg-white rounded-xl p-2 mt-2 hover:brightness-[0.975]"
           onClick={() => {
@@ -56,8 +67,19 @@ export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30
           className='w-48'
           onMouseLeave={() => setButtonHover(false)}
         >
+          <button 
+            className="absolute right-14 bg-white rounded-xl p-3 mx-2 mt-2 hover:brightness-[0.975]"
+            onClick={() => getEvents()}
+            onMouseEnter={() => {
+              clearInterval(timer.current);
+              timer.current = null;
+              setButtonHover(false)
+            }}
+          >
+            <SlRefresh size={16}/>
+          </button>
           <button
-            className={"absolute right-0 bg-white rounded-xl p-3 mx-2 mt-2 hover:brightness-[0.975] " +
+            className={"absolute right-2 bg-white rounded-xl p-3 mx-2 mt-2 hover:brightness-[0.975] " +
               (buttonHover || dropdownHover ? ' brightness-[0.975] ' : ' ')
             }
             onMouseEnter={() => {
@@ -88,6 +110,8 @@ export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30
                 setFilterCompleted(true)
               if (selectFilter === 'filterFuture30')
                 setFilterFuture30(true)
+              if (selectFilter === 'condensed')
+                setCondensed(true)
             }}
             onDeselect={(selectFilter) => {
               setSelectedFilter(selectedFilter.filter(filter => filter !== selectFilter))
@@ -95,6 +119,8 @@ export const Controls = ({setFilterCompleted, filterCompleted, setFilterFuture30
                 setFilterCompleted(false)
               if (selectFilter === 'filterFuture30')
                 setFilterFuture30(false)
+              if (selectFilter === 'condensed')
+                setCondensed(false)
             }}
             onMouseEnter={() => {
               setDropdownHover(true)

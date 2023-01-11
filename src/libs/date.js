@@ -2,39 +2,55 @@ import { DateTime } from 'luxon'
 
 export const convertDates = (convertedDateStart, convertedDateEnd) => {
 
+  //Same Day
   if (convertedDateStart.year === convertedDateEnd.year && convertedDateStart.day === convertedDateEnd.day) {
+    //With Time
     if (convertedDateStart.time && convertedDateEnd.time) {
+      //Same Time
       if (convertedDateStart.time === convertedDateEnd.time) {  
+        // Current Year
         if (Number(convertedDateStart.year) === Number(DateTime.now().year)) {
           return convertedDateStart.day + ", " + convertedDateStart.time;
         }
+        // Not Current Year
         return convertedDateStart.day + ", " + convertedDateStart.year + ", " + convertedDateStart.time
-      }
-      if (convertedDateStart.time.slice(-2) === convertedDateEnd.time.slice(-2)) {
+      //Same AM/PM
+      } else if (convertedDateStart.time.slice(-2) === convertedDateEnd.time.slice(-2)) {
+        // Current Year
         if (Number(convertedDateStart.year) === Number(DateTime.now().year)) {
           return convertedDateStart.day + ", " + convertedDateStart.time.slice(0, -2) + "-" + convertedDateEnd.time;
         }
+        // Not Current Year
         return convertedDateStart.day + ", " + convertedDateStart.year + ", " + convertedDateStart.time.slice(0, -2) + "-" + convertedDateEnd.time;
+      // Not Same Time
+      } else {
+        // Current Year
+        if (Number(convertedDateStart.year) === Number(DateTime.now().year)) {
+          return convertedDateStart.day + ", " + convertedDateStart.time + "-" + convertedDateEnd.time;
+        }
+        // Not Current Year
+        return convertedDateStart.day + ", " + convertedDateStart.year + ", " + convertedDateStart.time + "-" + convertedDateEnd.time;
       }
-      if (Number(convertedDateStart.year) === Number(DateTime.now().year)) {
-        return convertedDateStart.day + ", " + convertedDateStart.time + "-" + convertedDateEnd.time;
-      }
-      return convertedDateStart.day + ", " + convertedDateStart.year + ", " + convertedDateStart.time + "-" + convertedDateEnd.time;
     }
     return "error";
+  // Not Same Day
+  } else {
+    // No Time
+    if (!convertedDateStart.time && !convertedDateEnd.time) {
+      // If Single Day Event
+      if (convertedDateStart.date.toMillis() === convertedDateEnd.date.toMillis() || convertedDateStart.date.toMillis() === convertedDateEnd.date.plus({ days: -1 }).toMillis())
+        return convertedDateStart.date_text;
+      return convertedDateStart.date_text + " - " + convertDate(convertedDateEnd.date.plus({ days: -1 }), true).date_text;
+    }
+  
+    //Default
+    return convertedDateStart.date_text + " - " + convertedDateEnd.date_text;
   }
-  if (!convertedDateStart.time && !convertedDateEnd.time) {
-    if (convertedDateStart.date.toMillis() === convertedDateEnd.date.toMillis() || convertedDateStart.date.toMillis() === convertedDateEnd.date.plus({ days: -1 }).toMillis())
-      return convertedDateStart.date_text;
-    return convertedDateStart.date_text + " - " + convertDate(convertedDateEnd.date.plus({ days: -1 }), true).date_text;
-  }
-
-  return convertedDateStart.date_text + " - " + convertedDateEnd.date_text;
 }
 
 export const convertDate = (date_string, time_enabled) => {
-  let date  = DateTime.fromISO(date_string).toUTC().startOf('day');
-  let today = DateTime.now().toUTC().startOf('day')
+  let date  = DateTime.fromISO(date_string).startOf('day');
+  let today = DateTime.now().startOf('day')
   let date_time = DateTime.fromISO(date_string);
 
   let day = date.toFormat("LLL d");

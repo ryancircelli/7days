@@ -23,7 +23,7 @@ export const Settings = ({settings, className}) => {
         >
           Reset Settings
         </button>
-        <Header data={"Name"} extraProps={extraProps} viewportRef={undefined}/>
+        <Header data={"Name"} extraProps={extraProps} viewportRef={undefined} condensed={undefined}/>
         <div className="grid group/row">
           <div className='z-1 group-hover/row:border pointer-events-none ml-4 mr-6' style={{gridArea: '1/1'}}/>
           <div className="flex flex-row h-12 ml-4 mr-6" style={{gridArea: '1/1'}}>
@@ -63,13 +63,13 @@ export const Settings = ({settings, className}) => {
                   />
                 : (prop.type === "dropdown") ?
                   <PropDropdown
-                    data={undefined} 
+                    data={undefined}
                     settings={settings}
-                    prop={prop} 
-                    getEvents={undefined} 
+                    prop={prop}
+                    getEvents={undefined}
                     key={prop.name}
                     changeDefault={false}
-                    disabled
+                    disabled getSavedSettings={undefined}                 
                   />
                 : 
                   prop.name.toLowerCase()

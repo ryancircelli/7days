@@ -10,7 +10,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
   const eventValue = JSON.parse(data?.extendedProperties?.private['default'] || "{}")[prop.name.toLowerCase()];
   const [parsedEventValue, setParsedEventValue] = useState(null);
 
-  const originalValue = data?.recurringEventId && !changeDefault ? JSON.parse(data?.extendedProperties?.private[data?.recurringEventId] || "{}")[prop.name.toLowerCase()] : eventValue;
+  const originalValue = data?.recurringEventId && !changeDefault ? JSON.parse(data?.extendedProperties?.private[("recurrecnce" + data.recurringEventId)] || "{}")[prop.name.toLowerCase()] : eventValue;
   const [value, setValue] = useState(originalValue);
   const [parsedURL, setParsedURL] = useState(null);
   const [valid, setValid] = useState(false);
@@ -27,6 +27,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
     try {
       let url = parseUrl(eventValue)
       setValid(true)
+      setParsedURL(url)
       // @ts-ignore
       setParsedEventValue(url);
       setWidth(getTextWidth(url?.resource))
@@ -58,7 +59,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
     if (value === '' && originalValue !== '') {
       setWidth(getTextWidth(parsedEventValue?.resource))
       let privateProps = {...data.extendedProperties?.private}
-      let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+      let key = data.recurringEventId && !changeDefault ? ("recurrecnce" + data.recurringEventId) : 'default'
       let privatePropsKey = JSON.parse(privateProps[key] || "{}")
       delete privatePropsKey[prop.name.toLowerCase()]
       privateProps[key] = JSON.stringify(privatePropsKey)
@@ -68,7 +69,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
     if (parsedURL && parsedURL.href !== null && originalValue !== parsedURL.href && eventValue !== parsedURL.href) {
       setWidth(getTextWidth(parsedURL?.resource))
       let privateProps = {...data.extendedProperties?.private}
-      let key = data.recurringEventId && !changeDefault ? data.recurringEventId : 'default'
+      let key = data.recurringEventId && !changeDefault ? ("recurrecnce" + data.recurringEventId) : 'default'
       let privatePropsKey = JSON.parse(privateProps[key] || "{}")
       privatePropsKey[prop.name.toLowerCase()] = parsedURL.href
       privateProps[key] = JSON.stringify(privatePropsKey)
@@ -139,7 +140,9 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
               justifyContent: alignCenter ? "center" : "left"
             }}
           >
-            {parsedURL?.resource ? parsedURL?.resource : (parsedEventValue?.resource ? parsedEventValue?.resource : "-")}
+            <div className=" overflow-hidden whitespace-nowrap text-ellipsis">
+              {parsedURL?.resource ? parsedURL?.resource : (parsedEventValue?.resource ? parsedEventValue?.resource : "-")}
+            </div>
           </div>
         </a>
       :

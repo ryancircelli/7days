@@ -27,8 +27,8 @@ export const SettingsButton = ({data, extraProps, getEvents}) => {
 
   return (  
     <>
-      <button onClick={showModal} className="">
-        <FiMoreHorizontal className="m-2 align-bottom"/>
+      <button onClick={showModal} className="bg-white hover:brightness-[0.975] flex items-center justify-center rounded-xl p-2">
+        <FiMoreHorizontal className="align-bottom"/>
       </button>
       <Modal 
         title={
@@ -65,22 +65,26 @@ export const SettingsButton = ({data, extraProps, getEvents}) => {
                   {
                     (prop.type === "url") ?
                       <Url
-                        data={data} 
+                        data={data}
+                        prop={prop}
+                        getEvents={getEvents}
+                        key={prop.name}
+                        changeDefault={true} 
+                        disabled={undefined}
+                      />
+                    : (prop.type === "dropdown") ?
+                      <PropDropdown
+                        data={data}
                         prop={prop}
                         getEvents={getEvents}
                         key={prop.name}
                         changeDefault={true}
-                      />
-                    : (prop.type === "dropdown") ?
-                      <PropDropdown
-                        data={data} 
-                        prop={prop} 
-                        getEvents={getEvents} 
-                        key={prop.name}
-                        changeDefault={true}
+                        disabled={undefined} 
+                        settings={undefined} 
+                        getSavedSettings={undefined}
                       />
                     : 
-                      JSON.parse(data.extendedProperties?.private[data.recurringEventId ? data.recurringEventId : "single"] || "{}")?.[prop.name.toLowerCase()]
+                      JSON.parse(data.extendedProperties?.private[data.recurringEventId ? ("recurrecnce" + data.recurringEventId) : "default"] || "{}")?.[prop.name.toLowerCase()]
                   }
                 </div>
               )}

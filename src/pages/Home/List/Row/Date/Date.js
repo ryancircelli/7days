@@ -47,7 +47,9 @@ export const Date = ({data, getEvents, setScrollable, disabled}) => {
       >
         <button 
           onClick={()=> showEditor(!editor)} 
-          className="absolute top-0 hover:underline hover:decoration-dotted peer-hover:underline peer-hover:decoration-dotted w-full h-full flex-1 flex justify-center items-center"
+          className={"absolute top-0 hover:underline hover:decoration-dotted peer-hover:underline peer-hover:decoration-dotted w-full h-full flex-1 flex justify-center items-center" + 
+            (data.formatedEnd.clumped_date === 'Overdue' ? " text-red-700 " : "")
+          }
         >
           {convertDates(data.formatedStart, data.formatedEnd)}
           {data.recurrence ? <FiRepeat className="m-2 align-bottom"/> : ""}

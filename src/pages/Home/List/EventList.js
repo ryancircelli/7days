@@ -8,16 +8,18 @@ import { convertDate } from 'libs/date';
 
 import { ViewportList } from 'react-viewport-list';
 import { DateTime } from 'luxon';
+import { createEvent } from 'gapi/events';
 
-export const EventList = ({events, settings, getSavedSettings, getEvents, className}) => {
+export const EventList = ({events, settings, getSavedSettings, getEvents, className, calendar}) => {
 
   const [filterCompleted, setFilterCompleted] = useState(true);
   const [filterFuture30, setFilterFuture30] = useState(true);
   const [scrollable, setScrollable] = useState(true);
+  const [condensed, setCondensed] = useState(true);
 
   const extraProps = settings.extraProperties;
   let filtered_events = events.filter((event) => 
-    !(filterCompleted && JSON.parse(event.extendedProperties?.private[event.recurringEventId ? event.recurringEventId : "single"] || "{}")?.completed === true)
+    !(filterCompleted && JSON.parse(event.extendedProperties?.private[event.recurringEventId ? ("recurrecnce" + event.recurringEventId) : "default"] || "{}")?.completed === true)
     &&
     !(filterFuture30 && event.convertedStart > DateTime.now().plus({ days: 30 }))
   );
@@ -32,11 +34,14 @@ export const EventList = ({events, settings, getSavedSettings, getEvents, classN
       <div className="sticky top-0">
         <Controls 
           setFilterCompleted={setFilterCompleted}
-          setFilterFuture30={setFilterFuture30} 
+          setFilterFuture30={setFilterFuture30}
+          condensed={condensed}
+          setCondensed={setCondensed}
           listRef={listRef} 
           events_grouped={events_grouped}
           filterCompleted={filterCompleted}
           filterFuture30={filterFuture30}
+          getEvents={getEvents}
         />
       </div>
         <div className='w-full flex-1' ref={ref}>
@@ -71,18 +76,23 @@ export const EventList = ({events, settings, getSavedSettings, getEvents, classN
           >
             {events_grouped.map(([key, value], index) => {
               return (
-                <div key={key} ref={el => listRef.current[index] = el}>
+                <div key={key} ref={el => listRef.current[index] = el} style={{willChange: "transform"}}>
                   <Header 
-                    data={key} 
+                    data={key}
+                    date={value[0].convertedStart}
                     extraProps={extraProps} 
                     viewportRef={ref}
+                    condensed={condensed}
+                    getEvents={getEvents}
+                    calendar={calendar}
                   />
                   <ViewportList
                     viewportRef={ref}
                     items={value}
                     overscan={10}
+                    itemMinSize={condensed ? 36 : 48}
                   >
-                    {(item) => (
+                    {(item, i) => (
                       <Row
                         key={item.id + item.convertedStart} 
                         data={item} 
@@ -91,12 +101,27 @@ export const EventList = ({events, settings, getSavedSettings, getEvents, classN
                         getSavedSettings={getSavedSettings}
                         viewportRef={ref}
                         setScrollable={setScrollable}
+                        condensed={condensed}
+                        last={i === value.length - 1}
+                        first={i === 0}
                       />
                     )}
                   </ViewportList>
+                  <div className='h-2'/>
                 </div>
               )
             })}
+            <div className='h-14 flex justify-center items-start'>
+              <button 
+                className='flex justify-center items-center p-2 px-4 text-sm rounded-xl bg-white hover:brightness-[0.975]'
+                onClick={async ()=>{
+                  await createEvent(calendar.id)
+                  getEvents()
+                }}
+              >
+                Create New Event
+              </button>
+            </div>
           </Scrollbars>
         </div>
     </div>

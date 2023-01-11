@@ -69,11 +69,12 @@ export const listEvents = async (calendarID) => {
     events.push(...response.data.items)
     pageToken = response.data.nextPageToken ? response.data.nextPageToken : null;
   }
+  events = events.filter(event => event.status !== "cancelled")
 
   let recurring_events = events.flatMap((event) => convertToRecurring(event));
   events.flatMap((event) => [event, ...convertToRecurring(event)]);
   let items = recurring_events.map(({...rest}) => {
-    let start_date_or_time = rest.start.date ? true : false;
+    let start_date_or_time = rest.start?.date ? true : false;
     let start_date = DateTime.fromISO(start_date_or_time ? rest.start.date : rest.start.dateTime);
     let end_date_or_time = rest.end.date ? true : false;
     let end_date = DateTime.fromISO(end_date_or_time ? rest.end.date : rest.end.dateTime);
@@ -120,9 +121,9 @@ const convertToRecurring = (event) => {
   //1669939200000
   let dates = rule.between(eventStart, DateTime.now().plus({years: 10}).toJSDate(), true)
   for (let [index, date] of dates.entries()) {
-    let occuranceStart = DateTime.fromMillis(date.valueOf(), {zone: 'utc'});
+    let occuranceStart = DateTime.fromMillis(date.valueOf());
     occuranceStart = occuranceStart.setZone(start_date.zone, { keepLocalTime: true })
-    let occuranceEnd = DateTime.fromMillis(date.valueOf() + eventLength.valueOf(), {zone: 'utc'});
+    let occuranceEnd = DateTime.fromMillis(date.valueOf() + eventLength.valueOf());
     occuranceEnd = occuranceEnd.setZone(start_date.zone, { keepLocalTime: true })
   	output.push({
       ...event,
