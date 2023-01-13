@@ -118,7 +118,6 @@ const convertToRecurring = (event) => {
   const ruleOptions = RRule.parseString(event.recurrence[0]);
   ruleOptions.dtstart = eventStart;
   const rule = new RRule(ruleOptions);
-  //1669939200000
   let dates = rule.between(eventStart, DateTime.now().plus({years: 10}).toJSDate(), true)
   for (let [index, date] of dates.entries()) {
     let occuranceStart = DateTime.fromMillis(date.valueOf());

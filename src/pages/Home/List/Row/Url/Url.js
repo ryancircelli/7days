@@ -10,7 +10,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
   const eventValue = JSON.parse(data?.extendedProperties?.private['default'] || "{}")[prop.name.toLowerCase()];
   const [parsedEventValue, setParsedEventValue] = useState(null);
 
-  const originalValue = data?.recurringEventId && !changeDefault ? JSON.parse(data?.extendedProperties?.private[("recurrecnce" + data.recurringEventId)] || "{}")[prop.name.toLowerCase()] : eventValue;
+  const originalValue = data?.recurringEventId && !changeDefault ? (JSON.parse(data?.extendedProperties?.private[("recurrecnce" + data.recurringEventId)] || "{}")[prop.name.toLowerCase()] ?? eventValue) : eventValue;
   const [value, setValue] = useState(originalValue);
   const [parsedURL, setParsedURL] = useState(null);
   const [valid, setValid] = useState(false);
@@ -25,7 +25,8 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
 
   const loadEventValue = () => {
     try {
-      let url = parseUrl(eventValue)
+      console.log(eventValue)
+      let url = parseUrl(originalValue)
       setValid(true)
       setParsedURL(url)
       // @ts-ignore
