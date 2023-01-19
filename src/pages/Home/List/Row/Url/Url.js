@@ -25,7 +25,6 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
 
   const loadEventValue = () => {
     try {
-      console.log(eventValue)
       let url = parseUrl(originalValue)
       setValid(true)
       setParsedURL(url)
@@ -57,6 +56,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
 
   const exitInput = async () => {
     setSelected(false);
+    console.log(parsedURL, originalValue, eventValue)
     if (value === '' && originalValue !== '') {
       setWidth(getTextWidth(parsedEventValue?.resource))
       let privateProps = {...data.extendedProperties?.private}
@@ -68,6 +68,7 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
       getEvents();
     }
     if (parsedURL && parsedURL.href !== null && originalValue !== parsedURL.href && eventValue !== parsedURL.href) {
+      console.log('here2')
       setWidth(getTextWidth(parsedURL?.resource))
       let privateProps = {...data.extendedProperties?.private}
       let key = data.recurringEventId && !changeDefault ? ("recurrecnce" + data.recurringEventId) : 'default'
@@ -98,8 +99,10 @@ export const Url = ({data, prop, getEvents, changeDefault, disabled}) => {
   useEffect(() => {
     loadEventValue();
     const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target))
+      if (ref.current && !ref.current.contains(event.target)) {
+        console.log(parsedURL)
         exitInput();
+      }
     };
     document.addEventListener('click', handleClickOutside, true);
     return () => {

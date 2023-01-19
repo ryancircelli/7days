@@ -5,6 +5,7 @@ import { DateEditor } from './DateEditor/DateEditor';
 
 import { Popover, ArrowContainer } from 'react-tiny-popover'
 import { DateTime } from 'luxon';
+import { Tooltip } from 'antd';
 
 export const Date = ({data, getEvents, setScrollable, disabled}) => {
 
@@ -47,12 +48,28 @@ export const Date = ({data, getEvents, setScrollable, disabled}) => {
       >
         <button 
           onClick={()=> showEditor(!editor)} 
-          className={"absolute top-0 hover:underline hover:decoration-dotted peer-hover:underline peer-hover:decoration-dotted w-full h-full flex-1 flex justify-center items-center" + 
-            (data.formatedEnd.clumped_date === 'Overdue' ? " text-red-700 " : "")
+          className={"absolute top-0 hover:underline text-black hover:decoration-dotted peer-hover:underline peer-hover:decoration-dotted w-full h-full flex-1 flex justify-center items-center" + 
+            (data.formatedStart.clumped_date === 'Overdue' ? " text-red-700 " : "")
           }
         >
-          {convertDates(data.formatedStart, data.formatedEnd)}
-          {data.recurrence ? <FiRepeat className="m-2 align-bottom"/> : ""}
+          <Tooltip 
+            title={data.convertedStart.toLocaleString(DateTime.DATETIME_HUGE)}
+            color="#F3F4F7"
+            overlayInnerStyle={{
+              color: 'black'
+            }}
+            mouseEnterDelay={0.5}
+            mouseLeaveDelay={0}
+          >
+            <div
+              className={"absolute top-0 hover:underline text-black hover:decoration-dotted peer-hover:underline peer-hover:decoration-dotted w-full h-full flex-1 flex justify-center items-center" + 
+                (data.formatedStart.clumped_date === 'Overdue' ? " text-red-700 " : "")
+              }
+            >
+              {convertDates(data.formatedStart, data.formatedEnd)}
+              {data.recurrence ? <FiRepeat className="m-2 align-bottom"/> : ""}
+            </div>
+          </Tooltip>
         </button>
       </Popover>
     </div>

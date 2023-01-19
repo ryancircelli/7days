@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getTextWidth } from 'get-text-width';
 import { updateEventName } from 'gapi/events';
 import { FiEdit } from "react-icons/fi";
+import { Description } from './Description';
 
 export const Text = ({data, getEvents, disabled}) => {
   let placeholder = "(No title)";
@@ -77,20 +78,26 @@ export const Text = ({data, getEvents, disabled}) => {
       }}
     >
       <div className='h-full absolute flex items-center peer'>
-        <input 
-          ref={ref}
-          disabled={!selected || disabled}
-          autoComplete="off"
-          className="p-0 z-0 left-0 placeholder:text-black focus:ring-0 border-0"
-          style={{ 
-            width: selected ? '100%' : width +'px',
-          }}
-          type="text" 
-          value={value}
-          onChange={changeHandler}
-          onKeyDown={escapeHandler}
-          placeholder={placeholder}
-        />
+        {selected ? 
+          <input 
+            ref={ref}
+            disabled={!selected || disabled}
+            autoComplete="off"
+            className="p-0 z-0 w-full left-0 placeholder:text-black focus:ring-0 border-0"
+            type="text" 
+            value={value}
+            onChange={changeHandler}
+            onKeyDown={escapeHandler}
+            placeholder={placeholder}
+          />
+        :
+          <Description
+            width={width}
+            value={value}
+            data={data}
+            getEvents={getEvents}
+          />
+        }
       </div>
       <button 
         className={'w-8 h-full absolute group-hover:inline peer-focus:hidden hidden justify-center items-center' + (disabled ? ' invisible ' : '')}
