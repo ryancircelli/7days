@@ -14,6 +14,14 @@ export const Header = ({userInfo, setCredential}) => {
     {
       key: '0',
       label: (
+        <a href="https://github.com/rinorocks8/7days">
+          Source Code
+        </a>
+      )
+    },
+    {
+      key: '1',
+      label: (
         <button>
           Privacy Policy
         </button>
@@ -23,7 +31,7 @@ export const Header = ({userInfo, setCredential}) => {
       }
     },
     {
-      key: '1',
+      key: '2',
       label: (
         <button>
           Logout

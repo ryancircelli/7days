@@ -116,6 +116,9 @@ export const Home = ({setCredential}) => {
         <a className="absolute bottom-2 right-4 hover:underline" href="/privacy">
           Privacy Policy
         </a>
+        <a className="absolute bottom-2 left-4 hover:underline" href="https://github.com/rinorocks8/7days">
+          Source Code
+        </a>
       </div>
     )
 
