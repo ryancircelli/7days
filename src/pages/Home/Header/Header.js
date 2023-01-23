@@ -4,10 +4,24 @@ import { resetSettings } from 'gapi/settings';
 
 import { Dropdown } from 'antd';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export const Header = ({userInfo, setCredential}) => {
 
+  const navigate = useNavigate();
+
   const items = [
+    {
+      key: '0',
+      label: (
+        <button>
+          Privacy Policy
+        </button>
+      ),
+      onClick: async () => {
+        navigate('/privacy')
+      }
+    },
     {
       key: '1',
       label: (
@@ -24,19 +38,18 @@ export const Header = ({userInfo, setCredential}) => {
     },
   ];
 
-
-
   return (  
     <div className="flex flex-row h-full w-full relative">
-      <div 
+      <button 
         className='flex justify-center text-white text-6xl -mt-2' 
         style={{
           fontFamily: 'Poppins, sans-serif',
           fontWeight: '100'
         }}
+        onClick={()=>navigate('/')}
       >
         7days
-      </div>
+      </button>
       <div 
         className="absolute h-full flex flex-row right-4"
       >

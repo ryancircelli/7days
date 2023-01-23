@@ -7,8 +7,11 @@ import gLogo from '../../assets/g-logo.png';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = ({setCredential}) => {
+  const navigate = useNavigate();
+
   const getRefresh = async (refresh_token) => {
     try {
       console.log("Refresh Token:", refresh_token)
@@ -26,6 +29,8 @@ export const Login = ({setCredential}) => {
         });
       console.log("Credential Request Response:", tokens);
       setCredential(tokens.data.access_token)
+      navigate('/')
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + tokens.data.access_token;
       return tokens;
     } catch (error) {
       console.log('Failed Auth Refresh')
@@ -50,6 +55,8 @@ export const Login = ({setCredential}) => {
     console.log("Credential Request Response:", tokens);
     setTimeout(async () => {
       setCredential(tokens.data.access_token)
+      navigate('/')
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + tokens.data.access_token;
     }, 250);
     return tokens;
   }
@@ -129,6 +136,8 @@ export const Login = ({setCredential}) => {
               await googleLogout()
               Cookies.set('refresh_token', undefined)
               setCredential(undefined)
+              navigate('/login')
+              axios.defaults.headers.common['Authorization'] = undefined;
               console.log('Logging Out')
               setShowLogout(false)
               setTimeout(() => {
@@ -146,6 +155,9 @@ export const Login = ({setCredential}) => {
           </button>
         </div>
       </div>
+      <a className="absolute bottom-2 right-4 hover:underline" href="/privacy">
+        Privacy Policy
+      </a>
     </div>
   )
 }
