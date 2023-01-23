@@ -76,7 +76,7 @@ export const Privacy = () => {
                     Google Calendar API
                   </div>
                   <div>
-                    Our Service is built on top of Google Calendar API, which allows us to access data that you have stored on your Google Calendar. This data is only accessed with your explicit consent and is not stored on our servers. We use this data to interact with your Google Calendar and provide additional ways to organize your calendar and add additional fields to sort your calendar events.
+                    Our Service is built on top of Google Calendar API which uses https://www.googleapis.com/auth/calendar, which allows us to access data that you have stored on your Google Calendar. This data is only accessed with your explicit consent and is not stored on our servers. We use this data to interact with your Google Calendar and provide additional ways to organize your calendar and add additional fields to sort your calendar events.
                   </div>
                   <div className='my-5 font-semibold font-sans text-2xl'>
                     Data Collection and Use
