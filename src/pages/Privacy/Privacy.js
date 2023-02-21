@@ -125,7 +125,7 @@ export const Privacy = () => {
                   <div>
                     If you have any questions about our privacy policy or data
                     protection practices, please contact us by email at
-                    ryancircelli@gmail.com.
+                    test@gmail.com.
                   </div>
                 </div>
               </Scrollbars>

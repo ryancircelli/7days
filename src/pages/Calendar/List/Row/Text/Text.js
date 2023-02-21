@@ -79,7 +79,7 @@ export const Text = ({ data, getEvents, disabled }) => {
         borderWidth: selected ? "1px" : "0px",
       }}
     >
-      <div className="peer absolute flex h-full items-center">
+      <div className="peer absolute flex h-full w-full items-center">
         {selected ? (
           <input
             ref={ref}
