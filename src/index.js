@@ -1,25 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './pages/App';
-import reportWebVitals from './reportWebVitals';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { BrowserRouter } from 'react-router-dom'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./pages/App";
+import reportWebVitals from "./reportWebVitals";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { BrowserRouter } from "react-router-dom";
 
-import WebFont from 'webfontloader';
+import WebFont from "webfontloader";
 
 WebFont.load({
   google: {
-    families: ['Poppins:100,200,300,400', 'Roboto']
-  }
+    families: ["Poppins:100,200,300,400", "Roboto"],
+  },
 });
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId="820232599217-dpo4vm7it9vctfafu01f29huff8n4afa.apps.googleusercontent.com">
       <BrowserRouter>
-        <App/>
+        <App />
       </BrowserRouter>
     </GoogleOAuthProvider>
   </React.StrictMode>
